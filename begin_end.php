@@ -27,13 +27,12 @@ if(!$already_call_begin) {
 	if(!empty($style_name)) include STYLES_FOLDER . $style_name .'.php';
 
 	defineFilters($_REQUEST['changefilter'], $_REQUEST['clearfilter'], $_REQUEST['orderby'], $_REQUEST['nowpage'], $_REQUEST['registers']);
-//	if((!empty($style_name)) || (strpos(basename($_SERVER['REQUEST_URI']), 'ajax.php') === false)) { //Double check to do filters
 	if(!empty($style_name)) {
 		iffilter(); //If filter is set, put on javascript
 	}
 
-	if(!empty($_REQUEST['startTutorial'])) $_SESSION['tutorialStarted'] = $_REQUEST['startTutorial'];
-	if(!empty($_REQUEST['stopTutorial'])) $_SESSION['tutorialStarted'] = array();
+	if(!empty($_REQUEST['startTutorial'])) $_SESSION['tutorialActive'] = $_REQUEST['startTutorial'];
+	if(!empty($_REQUEST['stopTutorial']))  $_SESSION['tutorialActive'] = array();
 }
 
 
@@ -44,7 +43,9 @@ else {
 
 	if(file_exists($tpl .'.htm')) {
 		include $tpl .'.htm';
-		if(!empty($_SESSION['tutorialStarted'])) echo '<script src="'. TUTORIALS_FOLDER . $_SESSION['tutorialStarted'] .'" type="text/javascript"></script>';
+		if(!empty($_SESSION['tutorialActive'])) {
+			echo '<script src="'. TUTORIALS_FOLDER . $_SESSION['tutorialActive'] .'" type="text/javascript"></script>';
+		}
 	}
 
 	if(!empty($style_name)) include STYLES_FOLDER . $style_name .'.php';
