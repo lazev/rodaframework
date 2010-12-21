@@ -1,0 +1,66 @@
+h3 { margin: 1px; }
+
+.invisible { display: none; }
+
+.fullBox { width: 100%; }
+.halfBox { width: 49%; }
+.quarterBox { width: 24%; }
+
+#statusBar {
+	position: fixed;
+	width: 100%;
+	bottom: 0;
+	minHeight: 18;
+	borderTop: 1px outset;
+	opacity: 0.8;
+}
+
+#statusBar span {
+	background: url('img/ajax-loader.gif') center left no-repeat;
+	padding: 2px 2px 2px 20px;
+}
+
+.waitingCursor {
+	cursor: wait !important;
+}
+.ui-datepicker {
+	width: 14em !important;
+}
+
+.actionButtonSubBox {
+	position: absolute;
+}
+
+.actionButtonSubBox .actionButton {
+	display: block;
+	clear: both;
+	border-right: 0px;
+}
+
+.suggestionBox {
+	display: none;
+	position: absolute;
+	border: 1px outset;
+}
+
+.suggestionBox strong {
+	display: block;
+	padding: 5px 5px 5px 3px; 
+	background: white;
+}
+
+.suggestionBox div {
+	cursor: pointer;
+	background: white;
+	border-top: 1px #c0c0c0 dotted;
+	padding: 3px;
+}
+
+.suggestionBox div:hover {
+	background: #eee;
+}
+
+
+.buttonDisabled {
+	color: #cecece !important;
+}
