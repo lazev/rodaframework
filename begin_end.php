@@ -1,4 +1,4 @@
-<?
+<?php
 /*BEGIN*/
 if(!$already_call_begin) {
 	$already_call_begin = true; //do not change

@@ -520,7 +520,7 @@ function doUploadForm(x, ajaxFile, callback) {
 
 
 /*TABLE LIST*/
-function createList(destiny) {
+function gridList(destiny) {
 	this.header   = new Array();
 	this.body     = new Array();
 	this.destiny  = destiny;
@@ -539,9 +539,8 @@ function createList(destiny) {
 	this.last_page_label     = 'Última';
 	this.none_records_found  = 'Nenhum registro encontrado';
 
-	this.getBasicData = function(root) {
+	this.getListInfo = function(root) {
 		this.actual_page  = root.find('actual_page').text();
-		this.total_page   = root.find('total_page').text();
 		this.reg_per_page = root.find('reg_per_page').text();
 		this.total_reg    = root.find('total_reg').text();
 	}
@@ -552,6 +551,7 @@ function createList(destiny) {
 		var countcols = 0;
 		var resp = new Array();
 		var r = 0;
+		this.total_page = Math.ceil( this.total_reg / this.reg_per_page );
 
 		resp[r++] = '<table>';
 

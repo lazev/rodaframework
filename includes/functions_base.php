@@ -1,9 +1,9 @@
-<?
+<?php
 /*
 BASE FUNCTIONS
 File used by all the pages
 */
-include "class_base.php";
+include 'class_base.php';
 
 function cript($text, $passkey) {
 	$resp = base64_encode($text);
@@ -31,6 +31,44 @@ function decript($text, $passkey) {
 	}
 
 	return $resp;
+}
+
+function geraChave($tab, $fat) {
+	$tab = $tab*1;
+	$cod = $fat*1;
+
+	$md5 = substr(md5($tab . $cod . 'vla2010nfe+'), 5, 10);
+	$md5 = substr($md5, 0, 3) .'.'. substr($md5, 3, -3) .'.'. substr($md5, -3);
+
+	$tab = zerofill($tab, 3);
+	$tab = substr($tab, 0, -1) .'.'. substr($tab, -1);
+
+	$cod = zerofill($cod, 3);
+	$cod = substr($cod, 0, -1) .'.'. substr($cod, -1);
+
+	return $tab . $cod . $md5;
+}
+
+function trataChave($key) {
+	if(empty($key)) return false;
+	else {
+		$corte = strpos($key, '.')+2;
+		$resp['tab'] = str_replace('.', '', substr($key, 0, $corte))*1;
+		$key = substr($key, $corte);
+
+		$corte = strpos($key, '.')+2;
+		$resp['cod'] = str_replace('.', '', substr($key, 0, $corte))*1;
+		$key = str_replace('.', '', substr($key, $corte));
+
+		$md5 = substr(md5($resp['tab'] . $resp['cod'] . 'vla2010nfe+'), 5, 10);
+
+		if($md5 != $key) return false;
+		else return $resp;
+	}
+}
+
+function getSubdomain() {
+	return substr($_SERVER['HTTP_HOST'], 0, strpos($_SERVER['HTTP_HOST'], '.'));
 }
 
 
@@ -715,6 +753,27 @@ function mysql_update_changes($sql, $fields, $exclude=null) {
 	if(is_array($resp)) $r = implode('; ', $resp) .'.';
 
 	return $r;
+}
+
+
+/*SETLISTINFO
+ * Return some info about the list. $sql must be a select count*/
+function setListInfo($sql) {
+	global $register_per_page;
+
+	if(substr(strtolower($sql), -7) != 'limit 1') $sql .= ' limit 1';
+	$temp = sql($sql);
+
+	if($temp['total_reg'] !== null) $resp['total_reg'] = $temp['total_reg'];
+	elseif($temp['total'] !== null) $resp['total_reg'] = $temp['total'];
+
+	$resp['reg_per_page'] = getFilter('registers');;
+	if(empty($resp['reg_per_page'])) $resp['reg_per_page'] = $register_per_page;
+
+	$resp['actual_page'] = getFilter('nowpage');
+	if(empty($resp['actual_page'])) $resp['actual_page'] = 1;
+
+	return $resp;
 }
 
 /**********************************************\EMAIL FUNCTIONS/**********************************************/

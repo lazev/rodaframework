@@ -1,0 +1,1 @@
+/*Your own javascript functions to use around the system*/
