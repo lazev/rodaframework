@@ -48,13 +48,15 @@ function edit(x) {
 }
 
 function list() {
-	$.post('ajax.php', { com:'list' }, function(data) {
+	var lister = new gridList(); //Create the gridList object
+	lister.list_function = 'list'; //Js function to list and command to do ajax list
+	lister.source_file   = 'ajax.php';
+	lister.header        = ['Id=id', 'Name=name', 'Phone=phone', 'E-mail=email', 'Address=address']; //Define the header (Name=orderby)
 
-		var lister = new gridList('listbox'); //Create the gridList object
-		lister.header = ['Id', 'Name', 'Phone', 'E-mail', 'Address'];    //Define o cabeçalho
+	$.post(lister.source_file, { com:lister.list_function }, function(data) {
 
 		var contacts = $(data).find('contacts');
-		contacts.find('contact').each(function() { //Faz looping criando o corpo
+		contacts.find('contact').each(function() { //Looping to create the body
 			var check   = $(this).attr('id');
 			var id      = check;
 			var name    = '<a href="javascript:edit('+ id +');">'+ $(this).find('name').text() +'</a>';
@@ -64,8 +66,8 @@ function list() {
 			lister.body.push([check, id, name, phone, email, address]);
 		});
 
-		lister.getListInfo($(data).find('listinfo')); //Pega número de registros, número de páginas, etc
-		lister.doit(); //Efetivamente cria a lista e joga no div escolhido
+		lister.getListInfo($(data).find('listinfo')); //Get extra info about the list
+		lister.write('listbox'); //Write the result at the destiny
 	});
 }
 
@@ -109,7 +111,7 @@ $(document).ready(function() {
 
 	$('#formcontact').dialog('option', 'buttons', {
 		'Save': function() { defaultSaveButton($(this), 'save', 'list()'); }, //defaultSaveButton($(this), command, callback);
-		'Close': function() { defaultCloseButton($(this)) }
+		'Close': function() { $(this).dialog('close'); }
 	});
 });
 

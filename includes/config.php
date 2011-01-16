@@ -13,6 +13,7 @@ define(JS_RODA, '
 	<![endif]-->
 	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/jquery.bt.min.js"></script>
 	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/jquery.jqplot.min.js"></script>
+	<script type="text/javascript" src="'. RODA_INCLUDES .'sprintf.js"></script>
 	<script type="text/javascript" src="'. RODA_INCLUDES .'functions_base.js"></script>
 	<script type="text/javascript" src="'. RODA_INCLUDES .'functions_fields.js?v=2"></script>
 ');

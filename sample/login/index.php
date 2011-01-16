@@ -29,7 +29,7 @@ $(document).ready(function(){
 	function doin() {
 		$.post("ajax.php", $("#formlogin").serialize(), function(data) {
 
-			if(data == 1) window.location = '../start';
+			if(data == 1) window.location = '../main';
 			else warning(data);
 
 		});

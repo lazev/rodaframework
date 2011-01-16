@@ -87,11 +87,11 @@ function Filters(x) {
 
 
 /*CLASS - GENERAL FIELDS*/
-acOnSel  = new Array();
-acHidVal = new Array();
+acOnSel    = new Array();
+acHidVal   = new Array();
 regexRules = new Array();
 statusMsgs = new Array();
-alertMsgs = new Array();
+alertMsgs  = new Array();
 
 function Fields(x) {
 
@@ -422,6 +422,7 @@ jQuery.fn.setEspecialAttributes = function(x) {
 			hifenbar(this);
 			cleanchars(this, '0-9/');
 			completedate(this);
+			if(!is_date(this.value)) $(this).fieldErrorAlert(true);
 		});
 
 
@@ -447,7 +448,6 @@ jQuery.fn.setEspecialAttributes = function(x) {
 				}
 				else {
 					if(window.onOk) onOk($(this).attr('id'));
-					//$(this).fieldErrorAlert(false);
 				}
 			} else if(x == 'cnpj') {
 				if(!checkcnpj(this.value)) {
@@ -456,7 +456,6 @@ jQuery.fn.setEspecialAttributes = function(x) {
 				}
 				else {
 					if(window.onOk) onOk($(this).attr('id'));
-					//$(this).fieldErrorAlert(false);
 				}
 			} else {
 				if(!checkcpfcnpj(this.value)) {
@@ -465,7 +464,6 @@ jQuery.fn.setEspecialAttributes = function(x) {
 				}
 				else {
 					if(window.onOk) onOk($(this).attr('id'));
-					//$(this).fieldErrorAlert(false);
 				}
 			}
 		});
@@ -473,12 +471,11 @@ jQuery.fn.setEspecialAttributes = function(x) {
 	else if(x == 'email') {
 		this.limitchars('0-9A-Z_.@-');
 		this.blur(function() {
-			if(!checkmail(this.value)) {
+			if(!is_mail(this.value)) {
 				if(window.onError) onError($(this).attr('id'));
 				$(this).fieldErrorAlert(true);
 			} else {
 				if(window.onOk) onOk($(this).attr('id'));
-				//$(this).fieldErrorAlert(false);
 			}
 		});
 	}
@@ -521,18 +518,20 @@ function doUploadForm(x, ajaxFile, callback) {
 
 /*TABLE LIST*/
 function gridList(destiny) {
-	this.header   = new Array();
-	this.body     = new Array();
-	this.destiny  = destiny;
+	this.header       = new Array();
+	this.body         = new Array();
+	this.destiny      = destiny;
 	this.actual_page  = 1;
 	this.total_page   = 1;
 	this.reg_per_page = 15;
 	this.total_reg    = 0;
-	this.use_checkbox     = true;
-	this.reg_ppage_list   = { 10:'10 registros por página', 15:'15 registros por página', 25:'25 registros por página', 50:'50 registros por página', 100:'100 registros por página', 500:'500 registros por página' };
-	this.title_head_check = 'Inverter seleção';
-	this.title_head_sort  = 'Clique para ordenar';
-	this.total_reg_label  = 'registros encontrados'
+	this.use_checkbox = true;
+	this.list_command = 'list';
+	this.source_file  = 'list';
+	this.reg_ppage_list = { 10:'10 registros por página', 15:'15 registros por página', 25:'25 registros por página', 50:'50 registros por página', 100:'100 registros por página', 500:'500 registros por página' };
+	this.title_head_check    = 'Inverter seleção';
+	this.title_head_sort     = 'Clique para ordenar';
+	this.total_reg_label     = 'registros encontrados'
 	this.first_page_label    = 'Primeira';
 	this.previous_page_label = 'Anterior';
 	this.next_page_label     = 'Próxima';
@@ -545,7 +544,7 @@ function gridList(destiny) {
 		this.total_reg    = root.find('total_reg').text();
 	}
 
-	this.doit = function(destiny) {
+	this.write = function(destiny) {
 		if(!empty(destiny)) this.destiny = destiny;
 
 		var countcols = 0;
@@ -567,7 +566,7 @@ function gridList(destiny) {
 				countcols++;
 				if(this.header[k].indexOf('=') > -1) {
 					var temp = this.header[k].split('=');
-					resp[r++] = '<td><span onclick="changeOrder(\''+ temp[1] +'\')" title="'+ this.title_head_sort +'" style="float: left;" class="ui-icon ui-icon-triangle-2-n-s"></span>'+ temp[0] +'</td>';
+					resp[r++] = '<td><span onclick="changeOrder(\''+ temp[1] +'\', \''+ this.source_file +'\', \''+ this.list_command +'\')" title="'+ this.title_head_sort +'" style="float: left;" class="ui-icon ui-icon-triangle-2-n-s"></span>'+ temp[0] +'</td>';
 				} else {
 					resp[r++] = '<td>'+ this.header[k] +'</td>';
 				}
@@ -598,14 +597,14 @@ function gridList(destiny) {
 		}
 		resp[r++] = '</tbody><tfoot class="paginateFooter ui-widget-footer"><tr><td colspan="'+ countcols +'">';
 
-		resp[r++] = '<span class="onRight"><span id="selectNumberRegisters_rcpt"><select id="selectNumberRegisters" class="texto ui-widget-content ui-corner-all" style="width: 140px;" name="selectNumberRegisters">';
+		resp[r++] = '<span class="onRight"><select class="texto ui-widget-content ui-corner-all" style="width: 140px;" name="selectNumberRegisters" onchange="changeNumberRegisters(this, \''+ this.source_file +'\', \''+ this.list_command +'\')">';
 
 		for(k in this.reg_ppage_list) {
 			if(k == this.reg_per_page) var selit = 'selected="selected"'; else selit = '';
 			resp[r++] = '<option value="'+ k +'" '+ selit +'>'+ this.reg_ppage_list[k] +'</option>';
 		}
 
-		resp[r++] = '</select></span></span>';
+		resp[r++] = '</select></span>';
 
 		resp[r++] = '<div class="descrList">'+ this.total_reg +' '+ this.total_reg_label +'.</div>';
 
@@ -634,13 +633,19 @@ function gridList(destiny) {
 		resp[r++] = '</td></tr></tfoot></table>';
 		$('#'+ this.destiny).html(resp.join(''));
 		$('#'+ this.destiny).addClass('tableList');
-		doTableList($('#'+ this.destiny));
 
-		$('#'+ this.destiny).find('a').click(function(event) {
-			$('#'+ this.destiny).find('tbody tr.selected').trigger('click');
-		});
+		formatTableList($('#'+ this.destiny));
 
-		$('#'+ this.destiny).find('tbody tr').click(function(event) {
+		var listobj = $('#'+ this.destiny +' table');
+
+		//if click at a link inside the list, select only that line
+		$(listobj).find('a').click(function(event) { $(listobj).find('tbody tr.selected').trigger('click') });
+
+		/*if click idselall, (de)select all body lines*/
+		$(listobj).find('.idselall').click(function(event) { $(listobj).find('tbody tr').trigger('click') });
+
+		/*on click, select all the line (tr)*/
+		$('#'+ this.destiny +' table tbody tr').click(function(event) {
 			if($(this).hasClass('selected')) {
 				$(this).removeClass('selected');
 				$(this).children('td:first').children('input:checkbox').removeAttr('checked');
@@ -650,10 +655,6 @@ function gridList(destiny) {
 					$(this).children('td:first').children('input:checkbox').attr('checked', 'checked');
 				}
 			}
-		});
-
-		$('#'+ this.destiny).find('.idselall').click(function(event) {
-			$('#'+ this.destiny).find('tbody tr').trigger('click');
 		});
 
 	}
@@ -726,38 +727,6 @@ function actionButtons(x) {
 		}
 	}
 }
-
-
-
-
-/*DEFAULT GRID LIST*/
-function doGridList(destiny, parameters) {
-	$.post('ajax.php', parameters, function(resp) {
-		$('#'+ destiny).html(resp);
-
-		$('#'+ destiny).find('a').click(function(event) {
-			$('#'+ destiny).find('tbody tr.selected').trigger('click');
-		});
-
-		$('#'+ destiny).find('tbody tr').click(function(event) {
-			if($(this).hasClass('selected')) {
-				$(this).removeClass('selected');
-				$(this).children('td:first').children('input:checkbox').removeAttr('checked');
-			} else {
-				if($(this).children('td:first').children('input:checkbox').attr('name') != undefined) {
-					$(this).addClass('selected');
-					$(this).children('td:first').children('input:checkbox').attr('checked', 'checked');
-				}
-			}
-		});
-
-		$('#'+ destiny).find('.idselall').click(function(event) {
-			$('#'+ destiny).find('tbody tr').trigger('click');
-		});
-
-	});
-}
-
 
 
 

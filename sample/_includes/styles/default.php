@@ -30,12 +30,12 @@ if(!$already_show_header) { $already_show_header = true; //Do not change
 	</div>
 
 	<div id="logo">
-		<img src="<?=ROOT_URL?>_includes/styles/img/roda_black_logo.png">
+		<img src="<?=ROOT_URL?>_includes/styles/img/roda_black_logo.png" class="logo">
 	</div>
 
 	<?if(!empty($_SESSION['user_logged'])) {?>
 	<div id="headermenu">
-		<span><a href='../start'>Home</a></span>
+		<span><a href='../main'>Home</a></span>
 	</div>
 	<?}?>
 </div>

@@ -4,7 +4,7 @@ require '../config.inc.php';
 require RODA .'begin_end.php'; //Do not 'echo' nothing above this command
 
 if($_REQUEST['com'] == 'list') {
-	$sql = sql("select * from `contacts` where active='1' order by name");
+	$sql = sql("select * from `contacts` where active='1'". orderby('name') .  limit());
 	if($sql) {
 		foreach($sql as $reg) {
 			$resp['contacts']['contact id="'. $reg['id'] .'"']['name']    = $reg['name'];
@@ -38,12 +38,8 @@ if($_REQUEST['com'] == 'save') {
 	$reg['city']      = $_REQUEST['city'];
 	$reg['state']     = $_REQUEST['state'];
 
-	if(empty($_REQUEST['id'])) {
-		sql("insert into `contacts`", $reg);
-	}
-	else {
-		sql("update `contacts` set [fields] where id='". $_REQUEST['id'] ."'", $reg);
-	}
+	if(empty($_REQUEST['id'])) sql("insert into `contacts`", $reg);
+	else sql("update `contacts` set [fields] where id='". $_REQUEST['id'] ."'", $reg);
 	echo true;
 }
 

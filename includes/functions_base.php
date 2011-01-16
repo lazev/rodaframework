@@ -699,6 +699,26 @@ function sql($com, $insert='', $alternative_connection='', $debug=false) {
 	}
 }
 
+function orderby($default) {
+	$temp = getFilter('orderby');
+	$orderby = (empty($temp)) ? $default : $temp;
+	if(empty($orderby)) return '';
+	else return ' order by '. $orderby .' ';
+}
+
+
+function limit() {
+	global $register_per_page;
+
+	$registers = getFilter('registers');
+	$nowpage   = getFilter('nowpage');
+	$limitpage = $nowpage*$registers-$registers;
+
+	if(empty($registers)) $registers = setFilter('registers', $register_per_page);
+	if((empty($nowpage)) or ($nowpage < 1)) $nowpage = setFilter('nowpage', 1);
+
+	return ' limit '. $limitpage .', '. $registers;
+}
 
 
 function showTagList($table, $field, $where='') {

@@ -231,6 +231,7 @@ body {
 	height: 66px;
 }
 
+
 #auxmenu span {
 	background: url('img/pretotransparente.png');
 	float: right;
@@ -352,10 +353,8 @@ body {
 	-webkit-border-radius: 10px;
 }
 
-
-
 #logo { float: left; }
-#logo .logo { padding: 4px 0 0 14px; }
+#logo .logo { padding: 2px 0 0 14px; }
 
 #logoff {
 	float: right;

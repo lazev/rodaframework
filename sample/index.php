@@ -1,4 +1,4 @@
 <?php
 //Redirect to the main folder
-header('Location: start');
+header('Location: main');
 ?>
