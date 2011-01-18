@@ -1,5 +1,5 @@
 /*CLASS - FILTER BOX*/
-function Filters(x) {
+function Filters(listid, source, jscommand, fields) {
 	//Main form
 	var form = document.createElement('form');
 	$(form).attr('id', 'filterBox');
@@ -10,10 +10,10 @@ function Filters(x) {
 	});
 
 	//Fields
-	for(k in x) {
+	for(k in fields) {
 		var div = document.createElement('div');
-		x[k].id = 'filter_'+ x[k].id;
-		$(div).attr('id', x[k].id);
+		fields[k].id = 'filter_'+ fields[k].id;
+		$(div).attr('id', fields[k].id);
 		$(form).append($(div));
 	}
 
@@ -22,7 +22,7 @@ function Filters(x) {
 	$(but).attr('type', 'submit');
 	$(but).addClass('ui-button ui-state-default ui-corner-all');
 	$(but).val('Filtrar');
-	$(but).click(doFilter);
+	$(but).click(function() { doFilter(event, source, jscommand) });
 	$(form).append($(but));
 
 	//Links
@@ -30,7 +30,7 @@ function Filters(x) {
 	$(linx).attr('href', '');
 	$(linx).addClass('clearFilters');
 	$(linx).html('Limpar filtros');
-	$(linx).click(clearFilter);
+	$(linx).click(function() { clearFilter(event, source, jscommand) });
 	$(form).append($(linx));
 
 	var linx = document.createElement('a');
@@ -58,11 +58,11 @@ function Filters(x) {
 		$('#content').prepend($(div));
 	}
 
-	Fields(x);
+	Fields(fields);
 
 	$('#openFilters').click(function(event) {
 		event.preventDefault();
-		$('#'+ vari.listName).animate({ marginRight: '180px' }, 300 );
+		$('#'+ listid).animate({ marginRight: '180px' }, 300 );
 		$('#filterBox').show('slide', {direction: 'right'}, 'fast');
 		$('#openFilters').hide('slide', {direction: 'right'}, 'fast');
 	});
@@ -71,7 +71,7 @@ function Filters(x) {
 		event.preventDefault();
 		$('#filterBox').hide('slide', {direction: 'right'}, 'fast');
 		$('#filterBox')[0].reset();
-		$('#'+ vari.listName).animate({ marginRight: '0px' }, 300 );
+		$('#'+ listid).animate({ marginRight: '0px' }, 300 );
 		$('#openFilters').show('slide', {direction: 'right'}, 'fast');
 
 	});
@@ -526,12 +526,13 @@ function gridList(destiny) {
 	this.reg_per_page = 15;
 	this.total_reg    = 0;
 	this.use_checkbox = true;
+	this.filter_descr = '';
 	this.list_command = 'list';
-	this.source_file  = 'list';
+	this.source_file  = 'ajax.php';
 	this.reg_ppage_list = { 10:'10 registros por página', 15:'15 registros por página', 25:'25 registros por página', 50:'50 registros por página', 100:'100 registros por página', 500:'500 registros por página' };
 	this.title_head_check    = 'Inverter seleção';
 	this.title_head_sort     = 'Clique para ordenar';
-	this.total_reg_label     = 'registros encontrados'
+	this.total_reg_label     = '%d registros encontrados';
 	this.first_page_label    = 'Primeira';
 	this.previous_page_label = 'Anterior';
 	this.next_page_label     = 'Próxima';
@@ -542,6 +543,7 @@ function gridList(destiny) {
 		this.actual_page  = root.find('actual_page').text();
 		this.reg_per_page = root.find('reg_per_page').text();
 		this.total_reg    = root.find('total_reg').text();
+		this.filter_descr = root.find('filter_descr').text();
 	}
 
 	this.write = function(destiny) {
@@ -551,6 +553,7 @@ function gridList(destiny) {
 		var resp = new Array();
 		var r = 0;
 		this.total_page = Math.ceil( this.total_reg / this.reg_per_page );
+		if(this.total_page == 0) this.total_page = 1;
 
 		resp[r++] = '<table>';
 
@@ -606,7 +609,7 @@ function gridList(destiny) {
 
 		resp[r++] = '</select></span>';
 
-		resp[r++] = '<div class="descrList">'+ this.total_reg +' '+ this.total_reg_label +'.</div>';
+		resp[r++] = '<div class="descrList">'+ this.filter_descr +' '+ sprintf(this.total_reg_label, parseInt(this.total_reg)) +'.</div>';
 
 		resp[r++] = '<div class="onLeft">';
 

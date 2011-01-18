@@ -29,8 +29,8 @@ $ALERT_EVENT_EMAIL[] = 'your@email.com';
 //Always with / at the end
 $HTTP = ($_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
 
-define(RODA,          '/var/www/rodaframework/'); //Logical framework path
-define(RODA_URL,      $HTTP .'zipline.homelinux.com:8080/rodaframework/'); //Framework URL
+define(RODA,          '/var/www/rodaframework/rodaframework/'); //Logical framework path
+define(RODA_URL,      $HTTP .'zipline.homelinux.com:8080/rodaframework/rodaframework/'); //Framework URL
 define(RODA_STYLES,   RODA_URL .'styles/');
 define(RODA_INCLUDES, RODA_URL .'includes/');
 

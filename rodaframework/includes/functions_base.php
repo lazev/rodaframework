@@ -778,7 +778,7 @@ function mysql_update_changes($sql, $fields, $exclude=null) {
 
 /*SETLISTINFO
  * Return some info about the list. $sql must be a select count*/
-function setListInfo($sql) {
+function setListInfo($sql, $filterdescr) {
 	global $register_per_page;
 
 	if(substr(strtolower($sql), -7) != 'limit 1') $sql .= ' limit 1';
@@ -792,6 +792,13 @@ function setListInfo($sql) {
 
 	$resp['actual_page'] = getFilter('nowpage');
 	if(empty($resp['actual_page'])) $resp['actual_page'] = 1;
+
+	if(is_array($filterdescr)) {
+		foreach($filterdescr as $label => $descr) {
+			$descrs[] = $label .': '. $descr .'.';
+		}
+		$resp['filter_descr'] = implode(' ', $descrs);
+	}
 
 	return $resp;
 }

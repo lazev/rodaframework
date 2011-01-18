@@ -16,7 +16,7 @@ if(!$already_show_header) { $already_show_header = true; //Do not change
 	<?=JS_RODA?>
 	<script type="text/javascript" src="<?=ROOT_URL?>_includes/functions.js"></script>
 </head>
-
+<body>
 <div id="header" class="hideOnPrint">
 
 	<div id="auxmenu">

@@ -1,10 +1,26 @@
 <?php
+$filters[] = 'find';
+$filters[] = 'date';
+
 /*REQUIRE START/STOP FILE*/
 require '../config.inc.php';
 require RODA .'begin_end.php'; //Do not 'echo' nothing above this command
 
 if($_REQUEST['com'] == 'list') {
-	$sql = sql("select * from `contacts` where active='1'". orderby('name') .  limit());
+	//Filters
+	$temp = getFilter('find');
+	if(!empty($temp)) {
+		$filterbyfind = "and (id='$temp' or name like '%$temp%' or phone like '%$temp%' or email like '%$temp%')";
+		$filterdescr['Search for'] = $temp;
+	}
+	$temp = getFilter('date');
+	if(!empty($temp)) {
+		$filterbydate = "and born_date='". invertdate($temp) ."'";
+		$filterdescr['Born date'] = $temp;
+	}
+
+	//Main SQL
+	$sql = sql("select * from `contacts` where active='1' $filterbyfind $filterbydate". orderby('name') .  limit());
 	if($sql) {
 		foreach($sql as $reg) {
 			$resp['contacts']['contact id="'. $reg['id'] .'"']['name']    = $reg['name'];
@@ -13,7 +29,9 @@ if($_REQUEST['com'] == 'list') {
 			$resp['contacts']['contact id="'. $reg['id'] .'"']['address'] = $reg['address'];
 		}
 	}
-	$resp['listinfo'] = setListInfo("select count(id) as total_reg from `contacts` where active='1'");
+
+	//Extra info(total count sql, filterdescr)
+	$resp['listinfo'] = setListInfo("select count(id) as total_reg from `contacts` where active='1' $filterbyfind $filterbydate", $filterdescr);
 
 	array2xml($resp);
 }

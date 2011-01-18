@@ -49,7 +49,7 @@ function edit(x) {
 
 function list() {
 	var lister = new gridList(); //Create the gridList object
-	lister.list_function = 'list'; //Js function to list and command to do ajax list
+	lister.list_function = 'list'; //Js function to list and (or not) command to do ajax list
 	lister.source_file   = 'ajax.php';
 	lister.header        = ['Id=id', 'Name=name', 'Phone=phone', 'E-mail=email', 'Address=address']; //Define the header (Name=orderby)
 
@@ -92,6 +92,11 @@ $(document).ready(function() {
 	actionButtons([
 		{ name: 'Insert new contact', icon: 'ui-icon-plusthick',   click: insert },
 		{ name: 'Remove contact',     icon: 'ui-icon-trash',       click: remove }
+	]);
+
+	Filters('listbox', 'ajax.php', 'list', [
+		{ id:'find', type:'string', label:'Id, name, phone, email' },
+		{ id:'date', type:'date',   label:'Born date' }
 	]);
 
 	//Create and define fields options

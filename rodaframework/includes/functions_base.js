@@ -417,27 +417,31 @@ function activate(x, callback) {
 
 /*************************\FILTER AND PAGINATION/*************************/
 function goToPage(x, source, command) {
-	$.post(source, { nowpage:x }, function(data) {
+	$.post(source, { nowpage:x }, function() {
 		setTimeout(command +'()', 1);
 	});
 }
 function changeOrder(x, source, command) {
-	$.post(source, { orderby:x }, function(data) {
+	$.post(source, { orderby:x }, function() {
 		setTimeout(command +'()', 1);
 	});
 }
 function changeNumberRegisters(elem, source, command) {
-	$.post(source, { registers:elem.value }, function(data) {
+	$.post(source, { registers:elem.value }, function() {
 		setTimeout(command +'()', 1);
 	});
 }
-function doFilter(event) {
+function doFilter(event, source, command) {
 	event.preventDefault();
-	doGridList(vari.listName, 'com='+ vari.listCommand +'&changefilter=true&'+ $('#filterBox').serialize());
+	$.post(source, 'changefilter=true&'+ $('#filterBox').serialize(), function() {
+		setTimeout(command +'()', 1);
+	});
 }
-function clearFilter(event) {
+function clearFilter(event, source, command) {
 	event.preventDefault();
-	doGridList(vari.listName, 'com='+ vari.listCommand +'&clearfilter=true');
+	$.post(source, 'clearfilter=true', function() {
+		setTimeout(command +'()', 1);
+	});
 }
 
 
