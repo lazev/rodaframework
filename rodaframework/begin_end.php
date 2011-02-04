@@ -3,6 +3,9 @@
 if(!$already_call_begin) {
 	$already_call_begin = true; //do not change
 
+	/*MOBILE BROWSER IF AVALIABLE*/
+	if(!empty($mobile_file)) if(file_exists($mobile_file)) require_once RODA .'includes/mobile_browser.php';
+
 	/*START SESSION*/
 	session_start();
 
@@ -18,7 +21,9 @@ if(!$already_call_begin) {
 			exit();
 		}
 	} else {
-		if(!$disable_connection) require ACCESS_FILE;
+		if(!$disable_connection) {
+			if(file_exists(ACCESS_FILE)) require ACCESS_FILE;
+		}
 	}
 
 	if($enable_nusoap) require_once RODA .'includes/nusoap/nusoap.php';

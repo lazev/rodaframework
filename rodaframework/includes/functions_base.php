@@ -3,81 +3,11 @@
 BASE FUNCTIONS
 File used by all the pages
 */
-include 'class_base.php';
 
-function cript($text, $passkey) {
-	$resp = base64_encode($text);
-	$md5 = onlynumbers(md5($passkey));
-	echo "<br>$resp<br>";
-	echo "<br>$md5<br>";
-	for($i=1;$i<strlen($md5);$i++) if((is_numeric($md5[$i])) && ($resp[$md5[$i]] !== null) && ($resp[$md5[$i+1]] !== null))  {
-		$temp = $resp[$md5[$i]];
-		$resp[$md5[$i]*3] = $resp[$md5[$i+2]];
-		$resp[$md5[$i+2]*3] = $temp;
-	}
-	return $resp;
-}
-
-function decript($text, $passkey) {
-//	$resp = base64_decode($text);
-//	return $resp;
-	$resp = base64_encode($text);
-	$md5 = onlynumbers(md5($passkey));
-
-	for($i=strlen($md5);$i>1;$i--) if((is_numeric($md5[$i])) && ($resp[$md5[$i]] !== null) && ($resp[$md5[$i+1]] !== null))  {
-		$temp = $resp[$md5[$i]];
-		$resp[$md5[$i]*3] = $resp[$md5[$i+2]];
-		$resp[$md5[$i+2]*3] = $temp;
-	}
-
-	return $resp;
-}
-
-function geraChave($tab, $fat) {
-	$tab = $tab*1;
-	$cod = $fat*1;
-
-	$md5 = substr(md5($tab . $cod . 'vla2010nfe+'), 5, 10);
-	$md5 = substr($md5, 0, 3) .'.'. substr($md5, 3, -3) .'.'. substr($md5, -3);
-
-	$tab = zerofill($tab, 3);
-	$tab = substr($tab, 0, -1) .'.'. substr($tab, -1);
-
-	$cod = zerofill($cod, 3);
-	$cod = substr($cod, 0, -1) .'.'. substr($cod, -1);
-
-	return $tab . $cod . $md5;
-}
-
-function trataChave($key) {
-	if(empty($key)) return false;
-	else {
-		$corte = strpos($key, '.')+2;
-		$resp['tab'] = str_replace('.', '', substr($key, 0, $corte))*1;
-		$key = substr($key, $corte);
-
-		$corte = strpos($key, '.')+2;
-		$resp['cod'] = str_replace('.', '', substr($key, 0, $corte))*1;
-		$key = str_replace('.', '', substr($key, $corte));
-
-		$md5 = substr(md5($resp['tab'] . $resp['cod'] . 'vla2010nfe+'), 5, 10);
-
-		if($md5 != $key) return false;
-		else return $resp;
-	}
-}
 
 function getSubdomain() {
 	return substr($_SERVER['HTTP_HOST'], 0, strpos($_SERVER['HTTP_HOST'], '.'));
 }
-
-
-/**********************************************\HTML FUNCTIONS/**********************************************/
-
-function hintBox($text) {
-	return '<span class="ui-icon ui-icon-comment" style="float: left;" title="'. $text .'"></span>';
-}
-
 
 
 /**********************************************\FILTERS FUNCTIONS/**********************************************/
@@ -85,7 +15,7 @@ function hintBox($text) {
 function filterword() {
 	$filterword = $_SERVER['REQUEST_URI'] .'a';
 	$filterword = dirname($filterword);
-	return substr($filterword, strrpos($filterword, "/")+1);
+	return substr($filterword, strrpos($filterword, '/')+1);
 }
 
 function getFilter($name) {
@@ -147,8 +77,8 @@ function defineFilters($changefilter, $clearfilter, $orderby, $nowpage, $registe
 function iffilter() {
 	$f = filterword();
 	if($_SESSION['FILTER'][$f]['activefilter']) {
-		echo '<script>' ."\n";
-		foreach($_SESSION['FILTER'][$f] as $chave => $valor) echo "FILTER['". $chave ."'] = '". $valor ."';\n";
+		echo '<script>'. chr(13);
+		foreach($_SESSION['FILTER'][$f] as $chave => $valor) echo 'FILTER["'. $chave .'"] = "'. $valor .'";'. chr(13);
 		echo '</script>';
 	}
 }
@@ -371,7 +301,7 @@ Transform an Array to XML.
 function array2xml($x, $debug=false, $header=true) {
 	if(empty($x)) return false;
 
-	if($debug) $enterchar = "\n";
+	if($debug) $enterchar = chr(13);
 
 	if($header) {
 		header('Content-Type: text/xml; charset=UTF-8');
@@ -389,15 +319,17 @@ function array2xml($x, $debug=false, $header=true) {
 				$field = 'reg id="'. $field .'"';
 				$field2 = 'reg';
 			}
-			echo "<$field>$enterchar";
+			echo '<'. $field .'>'. $enterchar;
 			array2xml($value, $debug, false);
-			echo "</$field2>$enterchar";
+			echo '</'. $field2 .'>'. $enterchar;
 		}
 		else {
 
 			if(!is_numeric($field)) {
-				if((strpos($value, '<') !== false) || (strpos($value, '>') !== false) || (strpos($value, '&') !== false)) echo "<$field><![CDATA[". $value ."]]></$field2>$enterchar";
-				else echo "<$field>$value</$field2>$enterchar";
+				if((strpos($value, '<') !== false) || (strpos($value, '>') !== false) || (strpos($value, '&') !== false)) {
+					echo '<'. $field .'><![CDATA['. $value .']]></'. $field2 .'>'. $enterchar;
+				}
+				else echo '<'. $field .'>'. $value .'</'. $field2 .'>'. $enterchar;
 			}
 
 			//Strip numeric keys to economize
@@ -413,7 +345,7 @@ function array2xml($x, $debug=false, $header=true) {
 	if($header) echo '</root>';
 }
 
-
+//REPENSAR ESSA
 function diexml($coderror, $obs=null) {
 		global $status_list;
 
@@ -431,22 +363,25 @@ function diexml($coderror, $obs=null) {
 
 /*UTF8
 Convert array or string to utf8 charset
+onlyutf exclude all non utf8 chars
 */
-function utf8($x) {
+function utf8($x, $onlyutf=true) {
 	if(is_numeric($x)) return $x;
 	elseif(is_array($x)) {
 		foreach($x as $key => $value) {
 			if(is_array($value)) $resp[$key] = utf8($value);
 			else {
-				if(mb_detect_encoding($value .' ', 'UTF-8,ISO-8859-1') != 'UTF-8') $resp[$key] = utf8_encode($value);
-				else $resp[$key] = $value;
+				if(mb_detect_encoding($value .' ', 'UTF-8,ISO-8859-1') != 'UTF-8') $value = utf8_encode($value);
+				if($onlyutf) $value = iconv('UTF-8', 'ISO-8859-1//TRANSLIT//IGNORE', $value);
+				$resp[$key] = $value;
 			}
 		}
 		return $resp;
 	}
 	else {
-		if(mb_detect_encoding($x .' ', 'UTF-8,ISO-8859-1') != 'UTF-8') return utf8_encode($x);
-		else return $x;
+		if(mb_detect_encoding($x .' ', 'UTF-8,ISO-8859-1') != 'UTF-8') $x = utf8_encode($x);
+		if($onlyutf) $x = iconv('UTF-8', 'ISO-8859-1//TRANSLIT//IGNORE', $x);
+		return $x;
 	}
 }
 
@@ -494,7 +429,7 @@ IS_EMAIL
 Basic check of an email structure
 */
 function is_mail($email) {
-	return eregi("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$", $email);
+	return eregi('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$', $email);
 }
 
 
@@ -515,11 +450,11 @@ Check if the value is a date (yyyy-mm-dd)
 function is_date($date) {
 
 	if(strlen($date) > 12) { //Datetime
-		if(preg_match("/^(\d{4})-(\d{2})-(\d{2}) ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/", $date, $matches)) {
+		if(preg_match('/^(\d{4})-(\d{2})-(\d{2}) ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/', $date, $matches)) {
 			if(checkdate($matches[2], $matches[3], $matches[1])) return true;
 		}
 	} else { //Only date
-		if(preg_match("/^(\d{4})-(\d{2})-(\d{2})$/", $date, $matches)) {
+		if(preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $date, $matches)) {
 			if(checkdate($matches[2], $matches[3], $matches[1])) return true;
 		}
 	}
@@ -568,7 +503,7 @@ CLIENTKEY
 Subfunction, return the name of the client's folder.
 */
 function clientkey($x) {
-	return $x . substr(md5($x . "lazevroda"), 0, 3);
+	return $x . substr(md5($x . 'lazevroda'), 0, 3);
 }
 
 
@@ -602,9 +537,9 @@ function deltree($dir) {
 	if(is_dir($dir)) {
 		if($handle = opendir($dir)) {
 			while(false !== ($file = readdir($handle))) {
-				if(($file != ".") && ($file != "..")) {
-					if(is_dir("$dir/$file")) $counter += deltree("$dir/$file");
-					else if(unlink("$dir/$file")) $counter++;
+				if(($file != '.') && ($file != '..')) {
+					if(is_dir($dir .'/'. $file)) $counter += deltree($dir .'/'. $file);
+					else if(unlink($dir .'/'. $file)) $counter++;
 				}
 			}
 		} else return false;
@@ -654,14 +589,14 @@ function sql($com, $insert='', $alternative_connection='', $debug=false) {
 		}
 		//If it is an insert command
 		if(strtolower(substr($com, 0, 6)) == 'insert') { //INSERT
-			$field = implode(", ", $fields);
-			$value = implode("', '", $values);
-			$com = $com ." ($field) values ('$value')";
+			$field = implode(', ', $fields);
+			$value = implode('\', \'', $values);
+			$com = $com .' ('. $field .') values (\''. $value .'\')';
 		}
 		//If it is an update command
 		elseif(strtolower(substr($com, 0, 6)) == 'update') { //UPDATE
-			foreach($fields as $key => $value) $texts[] = "$value='". $values[$key] ."'";
-			$text = implode(", ", $texts);
+			foreach($fields as $key => $value) $texts[] = $value .'=\''. $values[$key] .'\'';
+			$text = implode(', ', $texts);
 			$com = str_replace('[fields]', $text, $com);
 		}
 	}
@@ -723,7 +658,7 @@ function limit() {
 
 function showTagList($table, $field, $where='') {
 	//Get all tags
-	$sql = sql("select $field from $table $where");
+	$sql = sql('select '. $field .' from '. $table .' '. $where);
 	if($sql) {
 		foreach($sql as $arr) {
 			$cru = str_replace('  ', ' ', $arr[$field]);
@@ -737,7 +672,7 @@ function showTagList($table, $field, $where='') {
 		}
 		if(is_array($combo)) {
 			ksort($combo);
-			foreach($combo as $key => $value) echo $key ."\n";
+			foreach($combo as $key => $value) echo $key . chr(13);
 		}
 	}
 }
@@ -855,14 +790,14 @@ function email($to, $subject, $msg, $from="", $frommail="", $html=false) {
 	if(empty($de)) $de = $egestornome;
 	if(empty($demail)) $demail = $egestoremail;
 	if($html) {
-		$headers  = "MIME-Version: 1.0\n";
-		$headers .= "Content-type: text/html; charset=iso-8859-1\n";
+		$headers  = 'MIME-Version: 1.0'. chr(13);
+		$headers .= 'Content-type: text/html; charset=iso-8859-1'. chr(13);
 	}
-	$headers .= "From: $de <$demail>\n";
-	$headers .= "X-Sender: $egestornome ($egestorurl)\n";
-	$headers .= "X-Mailer: PHP\n";
-	$headers .= "X-Priority: 3\n";
-	$headers .= "Return-Path: <$demail>\n";
+	$headers .= 'From: '. $de .' <'. $demail .'>'. chr(13);
+	$headers .= 'X-Sender: '. $egestornome .'('. $egestorurl .')'. chr(13);
+	$headers .= 'X-Mailer: PHP'. chr(13);
+	$headers .= 'X-Priority: 3'. chr(13);
+	$headers .= 'Return-Path: <'. $demail .'>'. chr(13);
 
 	if(checkmail($para)) return mail($para, $assunto, $mensagem, $headers);
 	else return false;
@@ -875,12 +810,12 @@ Send warnings and errors to an email
 */
 function errormonitor($msg, $avisar=true) {
 	global $PHP_SELF, $HTTP_HOST, $egestornome;
-	$texto = date('d/m/Y H:i') ."\t". $PHP_SELF ."\t". $_SESSION['empresa_logada'] ."\t". $msg ."\n";
+	$texto = date('d/m/Y H:i') ."\t". $PHP_SELF ."\t". $_SESSION['empresa_logada'] ."\t". $msg . chr(13);
 	$arquivo = 'includes/erros.log';
 //		if((filectime($arquivo) < time()-60*60) && ($HTTP_HOST != "zipline.homelinux.com:8080") && ($avisar)) {
-	$texto = str_replace("\t", "\n", $texto);
-	sendmail('vinilazev@gmail.com', "Erro no $egestornome", $texto);
-	sendmail('deivison@gmail.com', "Erro no $egestornome", $texto);
+	$texto = str_replace("\t", chr(13), $texto);
+	sendmail('vinilazev@gmail.com', 'Erro no '. $egestornome, $texto);
+	sendmail('deivison@gmail.com', 'Erro no '. $egestornome, $texto);
 //		}
 	if((file_exists($arquivo)) && (is_writable($arquivo))) {
 		if($handle = fopen($arquivo, 'a')) {
@@ -928,7 +863,7 @@ function changedate($date, $year=0, $month=0, $day=0) {
 
 /*
 DIFFDATE
-Return the difference between two dates, in days
+Returns the difference between two dates, in days
 */
 function diffdate($date1, $date2) {
 	//first date
@@ -952,9 +887,12 @@ function diffdate($date1, $date2) {
 /*
 PLURAL
 */
-function plural($text, $number) {
+function plural($text, $number, $doublechar=null) {
 	if($number == 1) return str_replace('#', '', $text);
-	else return str_replace('#', 's', $text);
+	else {
+		if($doublechar) $text = str_replace('##', $doublechar, $text);
+		return str_replace('#', 's', $text);
+	}
 }
 
 /*
@@ -962,7 +900,7 @@ MOD11 (Modulo 11)
 Create a mod 11 check digit
 */
 function mod11($base_val) {
-   $result = "";
+   $result = '';
    $weight = array(2, 3, 4, 5, 6, 7,
                    2, 3, 4, 5, 6, 7,
                    2, 3, 4, 5, 6, 7,
@@ -993,5 +931,89 @@ function mod11($base_val) {
 }
 
 
+
+/*CRIPT and DECRIPT a text with a passkey*/
+function cript($text, $passkey) {
+	$text = algorithm($text, $passkey);
+	for($i=0, $r=chr(rand(65, 90)); $i<strlen($text); $i++) $r .= ord(strval(substr($text, $i, 1))) . chr(rand(65, 90));
+	return $r;
+}
+function decript($text, $passkey) {
+	$text = join(array_map('chr', preg_split('/[A-Z]/', substr(substr($text, 1), 0, strlen($text) - 2))));
+	return algorithm($text, $passkey);
+}
+function algorithm($text, $privatekey) {
+	$k   = 0;
+	$l   = 0;
+	$r   = '';
+	$len = strlen($privatekey);
+	for($j=0; $j<=255; $j++) {
+		$key[$j]  = ord(substr($privatekey, $j % $len, 1));
+		$sbox[$j] = $j;
+	}
+	for($k=0; $k<=255; $k++) {
+		$l        = ($l + $sbox[$k] + $key[$k]) % 256;
+		$i        = $sbox[$k];
+		$sbox[$k] = $sbox[$l];
+		$sbox[$l] = $i;
+	}
+	for($j=1; $j<=strlen($text); $j++) {
+		$k        = ($k + 1) % 256;
+		$l        = ($l + $sbox[$k]) % 256;
+		$i        = $sbox[$k];
+		$sbox[$k] = $sbox[$l];
+		$sbox[$l] = $i;
+		$i1       = $sbox[($sbox[$k] + $sbox[$l]) % 256];
+		$j1       = ord(substr($text, $j - 1, 1)) ^ $i1;
+		$r       .= chr($j1);
+	}
+	return $r;
+}
+
+
+/*GENERATEKEY
+Create a key with the table name, any id and MD5 check security
+Returns string with the key
+Example: 00.1134.48ae.1b8f.c24
+*/
+function generateKey($table, $id, $passkey) {
+	$id = (int)$id;
+
+	$md5 = substr(md5($table . $id . $passkey), 5, 10);
+	$md5 = substr($md5, 0, 3) .'.'. substr($md5, 3, -3) .'.'. substr($md5, -3);
+
+	$table = zerofill($table, 3);
+	$table = substr($table, 0, -1) .'.'. substr($table, -1);
+
+	$id = zerofill($id, 3);
+	$id = substr($id, 0, -1) .'.'. substr($id, -1);
+
+	return $table . $id . $md5;
+}
+
+/*EXTRACTKEY
+Extract table and ID from the above function
+Returns:
+  $array['table']
+  $array['id']
+or false if wrong key
+*/
+function extractKey($key, $passkey) {
+	if(empty($key)) return false;
+	else {
+		$cut = strpos($key, '.')+2;
+		$resp['table'] = str_replace('.', '', substr($key, 0, $cut))*1;
+		$key = substr($key, $cut);
+
+		$cut = strpos($key, '.')+2;
+		$resp['id'] = str_replace('.', '', substr($key, 0, $cut))*1;
+		$key = str_replace('.', '', substr($key, $cut));
+
+		$md5 = substr(md5($resp['table'] . $resp['id'] . $passkey), 5, 10);
+
+		if($md5 != $key) return false;
+		else return $resp;
+	}
+}
 
 ?>

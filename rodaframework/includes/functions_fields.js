@@ -527,7 +527,7 @@ function gridList(destiny) {
 	this.total_reg    = 0;
 	this.use_checkbox = true;
 	this.filter_descr = '';
-	this.list_command = 'list';
+	this.list_function= 'list';
 	this.source_file  = 'ajax.php';
 	this.reg_ppage_list = { 10:'10 registros por página', 15:'15 registros por página', 25:'25 registros por página', 50:'50 registros por página', 100:'100 registros por página', 500:'500 registros por página' };
 	this.title_head_check    = 'Inverter seleção';
@@ -567,12 +567,14 @@ function gridList(destiny) {
 
 			for(k in this.header) {
 				countcols++;
+				this.header[k].replace('\=', '{temporaryequalsignal}');
 				if(this.header[k].indexOf('=') > -1) {
 					var temp = this.header[k].split('=');
-					resp[r++] = '<td><span onclick="changeOrder(\''+ temp[1] +'\', \''+ this.source_file +'\', \''+ this.list_command +'\')" title="'+ this.title_head_sort +'" style="float: left;" class="ui-icon ui-icon-triangle-2-n-s"></span>'+ temp[0] +'</td>';
+					resp[r++] = '<td><span onclick="changeOrder(\''+ temp[1] +'\', \''+ this.source_file +'\', \''+ this.list_function +'\')" title="'+ this.title_head_sort +'" style="float: left;" class="ui-icon ui-icon-triangle-2-n-s"></span>'+ temp[0] +'</td>';
 				} else {
 					resp[r++] = '<td>'+ this.header[k] +'</td>';
 				}
+//				this.header[k].replace('{temporaryequalsignal}', '=');
 			}
 			resp[r++] = '</tr></thead>';
 		}
@@ -600,7 +602,7 @@ function gridList(destiny) {
 		}
 		resp[r++] = '</tbody><tfoot class="paginateFooter ui-widget-footer"><tr><td colspan="'+ countcols +'">';
 
-		resp[r++] = '<span class="onRight"><select class="texto ui-widget-content ui-corner-all" style="width: 140px;" name="selectNumberRegisters" onchange="changeNumberRegisters(this, \''+ this.source_file +'\', \''+ this.list_command +'\')">';
+		resp[r++] = '<span class="onRight"><select class="texto ui-widget-content ui-corner-all" style="width: 140px;" name="selectNumberRegisters" onchange="changeNumberRegisters(this, \''+ this.source_file +'\', \''+ this.list_function +'\')">';
 
 		for(k in this.reg_ppage_list) {
 			if(k == this.reg_per_page) var selit = 'selected="selected"'; else selit = '';
@@ -614,8 +616,8 @@ function gridList(destiny) {
 		resp[r++] = '<div class="onLeft">';
 
 		if(this.actual_page > 1) {
-			resp[r++] = '<a href="javascript:goToPage(1)">'+ this.first_page_label +'</a> | ';
-			resp[r++] = '<a href="javascript:goToPage('+ (this.actual_page-1) +')">'+ this.previous_page_label +'</a> | ';
+			resp[r++] = '<a href="javascript:goToPage(1, \''+ this.source_file +'\', \''+ this.list_function +'\')">'+ this.first_page_label +'</a> | ';
+			resp[r++] = '<a href="javascript:goToPage('+ (parseInt(this.actual_page)-1) +', \''+ this.source_file +'\', \''+ this.list_function +'\')">'+ this.previous_page_label +'</a> | ';
 		} else {
 			resp[r++] = this.first_page_label +' | ';
 			resp[r++] = this.previous_page_label +' | ';
@@ -624,8 +626,8 @@ function gridList(destiny) {
 		resp[r++] = this.actual_page +'/'+ this.total_page;
 
 		if(this.actual_page < this.total_page) {
-			resp[r++] = ' | <a href="javascript:goToPage('+ (this.actual_page+1) +')">'+ this.next_page_label +'</a>';
-			resp[r++] = ' | <a href="javascript:goToPage('+ this.total_page +')">'+ this.last_page_label +'</a>';
+			resp[r++] = ' | <a href="javascript:goToPage('+ (parseInt(this.actual_page)+1) +', \''+ this.source_file +'\', \''+ this.list_function +'\')">'+ this.next_page_label +'</a>';
+			resp[r++] = ' | <a href="javascript:goToPage('+ this.total_page +', \''+ this.source_file +'\', \''+ this.list_function +'\')">'+ this.last_page_label +'</a>';
 		} else {
 			resp[r++] = ' | '+ this.next_page_label;
 			resp[r++] = ' | '+ this.last_page_label;
@@ -635,9 +637,10 @@ function gridList(destiny) {
 
 		resp[r++] = '</td></tr></tfoot></table>';
 		$('#'+ this.destiny).html(resp.join(''));
-		$('#'+ this.destiny).addClass('tableList');
+//		$('#'+ this.destiny).addClass('tableList');
 
-		formatTableList($('#'+ this.destiny));
+//		formatTableList($('#'+ this.destiny));
+		formatTableList($('.tableList'));
 
 		var listobj = $('#'+ this.destiny +' table');
 

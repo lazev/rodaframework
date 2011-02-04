@@ -4,7 +4,8 @@ $style_name          = 'default'; //Name of the style file
 $page_title          = 'Contacts'; //Title of the page
 $disable_connection  = false; //Connection is enabled by default
 $require_login       = true; //If true, require login to open
-$template_name       = ''; //If wanna use a different template name
+$template_name       = ''; //If wanna use a different template name (default index.htm)
+$mobile_file        = 'mindex.php'; //To redirect if is a mobile browser
 
 /*REQUIRE START/STOP FILE*/
 require '../config.inc.php';
