@@ -43,6 +43,8 @@ function edit(x) {
 			$('#city').val(      $(data).find('city').text() );
 			$('#state').val(     $(data).find('state').text() );
 
+			$('#detalhes').html( $(data).find('detalhes').text() );
+
 			$('#formcontact').dialog('open');
 		});
 	}
@@ -105,7 +107,7 @@ $(document).ready(function() {
 		{ id: 'id',       type: 'hidden' },
 		{ id: 'name',     type: 'string',  maxsize: 100,  require: true },
 		{ id: 'phone',    type: 'string',  maxsize: 100 },
-		{ id: 'email',    type: 'string',  maxsize: 100 },
+		{ id: 'email',    type: 'email',  maxsize: 100 },
 		{ id: 'born_date',type: 'date' },
 		{ id: 'obs',      type: 'textarea' },
 		{ id: 'address',  type: 'string',  maxsize: 100 },

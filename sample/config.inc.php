@@ -13,8 +13,8 @@ $CONNECTION_DATA['pass']   = 'your_db_pass';
 $CONNECTION_DATA['base']   = 'rodaframework'; //database name
 
 /*STYLES*/
-$jquery_css_ui_theme = 'redmond';
-//$jquery_css_ui_theme = 'ui-lightness';
+//$jquery_css_ui_theme = 'redmond';
+$jquery_css_ui_theme = 'ui-lightness';
 //$jquery_css_ui_theme = 'smoothness';
 //$jquery_css_ui_theme = 'custom-gray';
 
@@ -29,10 +29,7 @@ $ALERT_EVENT_EMAIL[] = 'your@email.com';
 //Always with / at the end
 $HTTP = ($_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
 
-define(RODA,          '/var/www/rodaframework/rodaframework/'); //Logical framework path
-define(RODA_URL,      $HTTP .'zipline.homelinux.com:8080/rodaframework/rodaframework/'); //Framework URL
-define(RODA_STYLES,   RODA_URL .'styles/');
-define(RODA_INCLUDES, RODA_URL .'includes/');
+define(SYSTEM_NAME,      'Sample of Roda'); //The name of your system
 
 define(ROOT,             dirname(__FILE__) .'/'); //Logical software path
 define(ROOT_URL,         $HTTP .'zipline.homelinux.com:8080/rodaframework/sample/'); //Software URL
@@ -40,22 +37,30 @@ define(STYLES_FOLDER,    ROOT .'_includes/styles/');
 define(INCLUDES_FOLDER,  ROOT .'_includes/');
 define(TUTORIALS_FOLDER, ROOT_URL .'includes/tutorials/');
 
+define(RODA,           ROOT .'rodaframework/'); //Logical framework path
+define(RODA_URL,       ROOT_URL .'rodaframework/'); //Framework URL
+define(RODA_STYLES,    RODA_URL .'styles/');
+define(RODA_INCLUDES,  RODA_URL .'includes/');
+
+define(CLIENTS_FOLDER, ROOT .'clients/'); //Clients root folder, if you wanna use it
+
 //Access path & file
 define(LOGIN_FOLDER, 'login/');
 define(ACCESS_FILE,  ROOT . LOGIN_FOLDER .'access.php'); //Script call this file to garantee access
+
 define(TABLEPREFIX,  'rod_'); //Used with the ACCESS_FILE if you wanna use different table after the login
 
 //KEEP SESSIONS ALIVE
 //Used to never lost session refreshing each 10 minutes.
 //If you don't wanna use, left empty.
-define(WAKEUP_FILE, RODA  .'includes/wakeup.php');
+define(WAKEUP_FILE, RODA .'includes/wakeup.php');
 
 /*EMAIL DEFINITIONS*/
 //To use with the smtp send mail framework function
-define(SMTP_HOST,     'smtp...com');
-define(SMTP_USERNAME, 'your@email.com');
-define(SMTP_PASSWORD, 'pass');
-define(SMTP_PORT,     '587');
+$MAIL['SMTP_PORT']     = 'smtp...com';
+$MAIL['SMTP_HOST']     = 'your@email.com';
+$MAIL['SMTP_USERNAME'] = 'pass';
+$MAIL['SMTP_PASSWORD'] = '587';
 
 //Your own functions file (you can include others files here too)
 include INCLUDES_FOLDER .'functions.php';

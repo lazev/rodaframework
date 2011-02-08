@@ -12,7 +12,7 @@ $(document).ready(function() {
 		});
 		$(this).ajaxStop(function() {
 			if($('.tableList').length) formatTableList();
-			if($('#statusBar').html().toLowerCase() == '<div><span>carregando... por favor, aguarde.</span></div>') hideStatus();
+			if($('#statusBar').html().toLowerCase() == '<div><span>carregando... por favor, aguarde.</span></div>') status(' ');
 		});
 		$(window).unload(function() {
 			status('<span>Carregando... por favor, aguarde.</span>', true);
@@ -516,4 +516,22 @@ jQuery.fn.center = function(x, y, z) {
 
 jQuery.fn.tagName = function() {
     return this.get(0).tagName;
+}
+
+/*************************\INTERNACIONALIZATION/*************************/
+
+
+
+function _(x) {
+//	return getLang(x);
+}
+
+function getLang(x) {
+	alert(x);
+	if(empty(i18n[x])) return x;
+	return i18n[x];
+}
+
+function translate(s) {
+	return s.replace(/{\#([^}]+)\}/g, function(a, b) { return getLang(String(b)) });
 }

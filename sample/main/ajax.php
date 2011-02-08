@@ -40,6 +40,13 @@ if($_REQUEST['com'] == 'list') {
 if($_REQUEST['com'] == 'edit') {
 	$resp = sql("select * from `contacts` where id='". $_REQUEST['cod'] ."' limit 1");
 	$resp['born_date'] = datemask($resp['born_date']);
+
+	$resp['detalhes'] = "<table>
+									<tr>
+										<td>oi </td>
+									</tr>
+								</table>";
+
 	array2xml($resp);
 }
 

@@ -22,7 +22,7 @@ function Filters(listid, source, jscommand, fields) {
 	$(but).attr('type', 'submit');
 	$(but).addClass('ui-button ui-state-default ui-corner-all');
 	$(but).val('Filtrar');
-	$(but).click(function() { doFilter(event, source, jscommand) });
+	$(but).click(function(event) { doFilter(event, source, jscommand) });
 	$(form).append($(but));
 
 	//Links
@@ -30,7 +30,6 @@ function Filters(listid, source, jscommand, fields) {
 	$(linx).attr('href', '');
 	$(linx).addClass('clearFilters');
 	$(linx).html('Limpar filtros');
-	$(linx).click(function() { clearFilter(event, source, jscommand) });
 	$(form).append($(linx));
 
 	var linx = document.createElement('a');
@@ -69,6 +68,7 @@ function Filters(listid, source, jscommand, fields) {
 
 	$('.clearFilters').click(function(event) {
 		event.preventDefault();
+		clearFilter(event, source, jscommand);
 		$('#filterBox').hide('slide', {direction: 'right'}, 'fast');
 		$('#filterBox')[0].reset();
 		$('#'+ listid).animate({ marginRight: '0px' }, 300 );

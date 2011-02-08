@@ -484,14 +484,14 @@ function size_hum_read($size) {
 CLIENTFOLDER
 Return the client default folder. Create it if doesn't exist.
 */
-function clientfolder($subfolder='') {
+function clientFolder($subfolder='') {
 	if(!empty($subfolder)) {
-		$folder = ROOT .'/'. CLIENTS .'/'. clientkey($_SESSION['user_logged']);
+		$folder = CLIENTS_FOLDER . clientKey($_SESSION['user_logged']);
 		if(!file_exists($folder)) mkdir($folder);
 		$sub = '/'. $subfolder;
 	}
 
-	$folder = ROOT .'/'. CLIENTS .'/'. clientkey($_SESSION['user_logged']) . $sub;
+	$folder = CLIENTS_FOLDER . clientKey($_SESSION['user_logged']) . $sub;
 	if(!file_exists($folder)) {
 		if(mkdir($folder)) return $folder;
 		else return false;
@@ -502,7 +502,7 @@ function clientfolder($subfolder='') {
 CLIENTKEY
 Subfunction, return the name of the client's folder.
 */
-function clientkey($x) {
+function clientKey($x) {
 	return $x . substr(md5($x . 'lazevroda'), 0, 3);
 }
 
@@ -570,6 +570,8 @@ $response = sql("select * from table where ...");
 function sql($com, $insert='', $alternative_connection='', $debug=false) {
 
 	$com = trim($com);
+	$com = trim($com, '(');
+	$com = trim($com, ')');
 
 	//If is defined, use the alternative connection
 	if(!empty($alternative_connection)) $connection = $alternative_connection;
@@ -680,7 +682,7 @@ function showTagList($table, $field, $where='') {
 /*MYSQL_UPDATE_CHAGES
 Used with sql() function, look for changes before update a table
 */
-function mysql_update_changes($sql, $fields, $exclude=null) {
+function mysqlUpdateChanges($sql, $fields, $exclude=null) {
 	$sql = trim($sql);
 	if(strtolower(substr($sql, -7)) != 'limit 1') $sql = $sql .' limit 1';
 
@@ -743,85 +745,52 @@ function setListInfo($sql, $filterdescr) {
 /*
 SENDMAIL
 Send an email using smtp
+Optimized to GMail
 */
-function sendmail($para, $assunto, $mensagem, $denome='', $demail='', $html=false) {
+function sendMail($to, $subject, $msg, $fromName='', $fromMail='', $html=false) {
 	require_once('smtp/class.phpmailer.php');
 
 	$mail = new PHPMailer();
-	$mail->SMTP_PORT = SMTP_PORT; //porta de smt a ser utilizada. Neste caso, a 587 que o GMail utiliza
-	$mail->Host = SMTP_HOST; //endereço do servidor smtp do GMail
-	$mail->Username = SMTP_USERNAME; //usuário SMTP do GMail
-	$mail->Password = SMTP_PASSWORD; //senha do usuário SMTP do GMail
+	$mail->SMTP_PORT = $MAIL['SMTP_PORT']; //Port do SMTP connection. GMail uses 587.
+	$mail->Host      = $MAIL['SMTP_HOST']; //Your e-mail address
+	$mail->Username  = $MAIL['SMTP_USERNAME']; //User to connect
+	$mail->Password  = $MAIL['SMTP_PASSWORD']; //Password to connect
 
-	$mail->SetLanguage('br', ''); //língua a ser utilizadda
-	$mail->SMTPSecure = 'tls'; //tipo de comunicação a ser utilizada, no caso, a TLS do GMail
-	$mail->IsSMTP(); //email para utilizar protocolo SMTP
-	$mail->SMTPAuth = true; //autenticação SMTP, no caso do GMail, é necessário
-	$mail->WordWrap = 75; // quebra linha sempre que uma linha atingir os caracteres (inicial: 50)
+	$mail->SetLanguage('br', ''); //Language to use.
+	$mail->SMTPSecure = 'tls'; //Communication secure type. GMail uses TLS.
+	$mail->IsSMTP(); //To use SMTP protocol
+	$mail->SMTPAuth = true; //GMail requires SMTP authentication.
+	$mail->WordWrap = 75; //Break the line when hit the char lenght (default: 50)
 
 	$mail->IsHTML($html);
-	$mail->From = $demail;
-	$mail->FromName = $denome;
-	$mail->AddAddress($para);
-	$mail->AddReplyTo($demail, $de);
-	$mail->Subject = $assunto;
-	$mail->Body = $mensagem;
+	$mail->From     = $fromMail;
+	$mail->FromName = $fromName;
+	$mail->Subject  = $subject;
+	$mail->Body     = $msg;
+	$mail->AddAddress($to);
+	$mail->AddReplyTo($fromMail, $fromName);
 
 	/*
-	Opcionais:
-	$mail->AddAttachment("/var/tmp/file.tar.gz");         // adc arquivo anexo.
-	$mail->AddAttachment("/tmp/image.jpg", "new.jpg");    // adc outro arquivo anexo com nome (opcional).
-	$mail->AltBody = "Este é o corpo da mensagem para usuários que possuem a opção de ver o html do email desativada em seu cliente de email";
+	Extras:
+	$mail->AddAttachment("/var/tmp/file.tar.gz");         // File attached
+	$mail->AddAttachment("/tmp/image.jpg", "new.jpg");    // File attached with other name
+	$mail->AltBody = "Text to show to users with HTML view desactived";
 	*/
 
-	if(!$mail->Send()) $resposta = false; //"Erro no envio: ". $mail->ErrorInfo;
-	else $resposta = true; //"Mensagem enviada";
-
-	return $resposta;
+	return $mail->Send(); //Returns true or false
 }
 
-/*
-EMAIL
-Send an email with basic mail PHP function
-*/
-function email($to, $subject, $msg, $from="", $frommail="", $html=false) {
-	global $egestornome, $egestorurl, $egestoremail;
-
-	if(empty($de)) $de = $egestornome;
-	if(empty($demail)) $demail = $egestoremail;
-	if($html) {
-		$headers  = 'MIME-Version: 1.0'. chr(13);
-		$headers .= 'Content-type: text/html; charset=iso-8859-1'. chr(13);
-	}
-	$headers .= 'From: '. $de .' <'. $demail .'>'. chr(13);
-	$headers .= 'X-Sender: '. $egestornome .'('. $egestorurl .')'. chr(13);
-	$headers .= 'X-Mailer: PHP'. chr(13);
-	$headers .= 'X-Priority: 3'. chr(13);
-	$headers .= 'Return-Path: <'. $demail .'>'. chr(13);
-
-	if(checkmail($para)) return mail($para, $assunto, $mensagem, $headers);
-	else return false;
-}
 
 
 /*
 ERRORMONITOR
 Send warnings and errors to an email
 */
-function errormonitor($msg, $avisar=true) {
-	global $PHP_SELF, $HTTP_HOST, $egestornome;
-	$texto = date('d/m/Y H:i') ."\t". $PHP_SELF ."\t". $_SESSION['empresa_logada'] ."\t". $msg . chr(13);
-	$arquivo = 'includes/erros.log';
-//		if((filectime($arquivo) < time()-60*60) && ($HTTP_HOST != "zipline.homelinux.com:8080") && ($avisar)) {
-	$texto = str_replace("\t", chr(13), $texto);
-	sendmail('vinilazev@gmail.com', 'Erro no '. $egestornome, $texto);
-	sendmail('deivison@gmail.com', 'Erro no '. $egestornome, $texto);
-//		}
-	if((file_exists($arquivo)) && (is_writable($arquivo))) {
-		if($handle = fopen($arquivo, 'a')) {
-			fwrite($handle, $texto);
-			fclose($handle);
-		}
+function errorMonitor($msg) {
+	global $ALERT_EVENT_EMAIL;
+	$text = date('d/m/Y H:i') .chr(13). $_SERVER['PHP_SELF'] .chr(13). $msg . chr(13);
+	foreach($ALERT_EVENT_EMAIL as $mail) {
+		sendMail($mail, 'Error on '. SYSTEM_NAME, $texto);
 	}
 }
 
@@ -846,7 +815,7 @@ function debug($x) {
 CREATEPASS
 Create a random pass with easy chars
 */
-function createpass($size=6, $initpass='') {
+function createPass($size=6, $initpass='') {
 	$base = 'abcdefghijklmnopqrstuvwxyz123456789';
 	for($ii=0; $ii<$size; $ii++) $initpass .= $base{rand(1, 36)};
 	return $initpass;
@@ -856,7 +825,7 @@ function createpass($size=6, $initpass='') {
 CHANGEDATE
 Increase/decrease year, month and/or day of some date
 */
-function changedate($date, $year=0, $month=0, $day=0) {
+function changeDate($date, $year=0, $month=0, $day=0) {
 	$split = explode('-', $date);
 	return date('Y-m-d', mktime (0, 0, 0, $split[1]+$month, $split[2]+$day, $split[0]+$year));
 }
@@ -865,7 +834,7 @@ function changedate($date, $year=0, $month=0, $day=0) {
 DIFFDATE
 Returns the difference between two dates, in days
 */
-function diffdate($date1, $date2) {
+function diffDate($date1, $date2) {
 	//first date
 	$date1 = explode('-', $date1);
 	$year1 = $date1[0];
