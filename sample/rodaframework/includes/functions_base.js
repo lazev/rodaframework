@@ -12,7 +12,7 @@ $(document).ready(function() {
 		});
 		$(this).ajaxStop(function() {
 			if($('.tableList').length) formatTableList();
-			if($('#statusBar').html().toLowerCase() == '<div><span>carregando... por favor, aguarde.</span></div>') status(' ');
+			if($('#statusBar').html().toLowerCase() == '<div><span>carregando... por favor, aguarde.</span></div>') status('');
 		});
 		$(window).unload(function() {
 			status('<span>Carregando... por favor, aguarde.</span>', true);
@@ -173,6 +173,8 @@ function validateFormFields(x, debug) {
 		if(!empty(debug)) x.find('.dataFieldError:visible').each(function() { warning($(this).attr('id')); } );
 		if(count == 1) error.push(sprintf(onefielderror, count));
 		else error.push(sprintf(morefieldserror, count));
+		$('.dataFieldError:visible:first').focus();
+		$('html, body').animate({scrollTop: $(window).scrollTop()-20}, 'slow');
 	}
 
 	if(!empty(error)) {

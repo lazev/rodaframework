@@ -570,8 +570,6 @@ $response = sql("select * from table where ...");
 function sql($com, $insert='', $alternative_connection='', $debug=false) {
 
 	$com = trim($com);
-	$com = trim($com, '(');
-	$com = trim($com, ')');
 
 	//If is defined, use the alternative connection
 	if(!empty($alternative_connection)) $connection = $alternative_connection;
@@ -748,6 +746,8 @@ Send an email using smtp
 Optimized to GMail
 */
 function sendMail($to, $subject, $msg, $fromName='', $fromMail='', $html=false) {
+	global $MAIL;
+
 	require_once('smtp/class.phpmailer.php');
 
 	$mail = new PHPMailer();

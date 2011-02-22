@@ -526,6 +526,8 @@ function gridList(destiny) {
 	this.reg_per_page = 15;
 	this.total_reg    = 0;
 	this.use_checkbox = true;
+	this.sortable     = false;
+	this.sortable_function = '';
 	this.filter_descr = '';
 	this.list_function= 'list';
 	this.source_file  = 'ajax.php';
@@ -579,7 +581,9 @@ function gridList(destiny) {
 			resp[r++] = '</tr></thead>';
 		}
 
-		resp[r++] = '<tbody>';
+		var sortid = (this.sortable) ? 'id="sortable"' : '';
+
+		resp[r++] = '<tbody '+ sortid +'>';
 		if(this.body.length == 0) {
 			resp[r++] = '<tr><td colspan="'+ countcols +'"><i>'+ this.none_records_found +'</i></td></tr>';
 		} else {
@@ -662,6 +666,13 @@ function gridList(destiny) {
 				}
 			}
 		});
+
+		/*allow sort elements*/
+		if(this.sortable) {
+			if(empty(this.sortable_function)) $("#sortable").sortable();
+			else $("#sortable").sortable({ update:function(event, ui) { setTimeout(this.sortable_function, 50); } });
+			$("#sortable").disableSelection();
+		}
 
 	}
 }

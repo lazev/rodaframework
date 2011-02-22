@@ -87,6 +87,10 @@ function remove() {
 	}
 }
 
+function alertar(x) {
+	alert(x);
+}
+
 $(document).ready(function() {
 
 	list();
@@ -112,7 +116,7 @@ $(document).ready(function() {
 		{ id: 'obs',      type: 'textarea' },
 		{ id: 'address',  type: 'string',  maxsize: 100 },
 		{ id: 'zipcode',  type: 'integer' },
-		{ id: 'city',     type: 'string',  maxsize: 100 },
+		{ id: 'city',     type: 'autocomplete', action:'ajax.php?com=autocity', hidden:'codcity', onselect:'alertar()' },
 		{ id: 'state',    type: 'string' }
 	]);
 

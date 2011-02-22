@@ -41,12 +41,6 @@ if($_REQUEST['com'] == 'edit') {
 	$resp = sql("select * from `contacts` where id='". $_REQUEST['cod'] ."' limit 1");
 	$resp['born_date'] = datemask($resp['born_date']);
 
-	$resp['detalhes'] = "<table>
-									<tr>
-										<td>oi </td>
-									</tr>
-								</table>";
-
 	array2xml($resp);
 }
 
@@ -72,6 +66,24 @@ if($_REQUEST['com'] == 'save') {
 if($_REQUEST['com'] == 'remove') {
 	sql("update `contacts` set active='0' where id in (". $_REQUEST['cods'] .")");
 	echo true;
+}
+
+
+if($_REQUEST['com'] == 'autocity') {
+	echo '
+		[{ "id": 1, "label": "Eurasian Hoopoe", "value": "Eurasian Hoopoe" },
+		{ "id": 2, "label": "Eurasian Wryneck", "value": "Eurasian Wryneck" },
+		{ "id": 3, "label": "Eurasian Pied Flycatcher", "value": "Eurasian Pied Flycatcher" },
+		{ "id": 4, "label": "Eurasian Nuthatch", "value": "Eurasian Nuthatch" },
+		{ "id": 5, "label": "Eurasian Hobby", "value": "Eurasian Hobby" },
+		{ "id": 6, "label": "Eurasian Magpie", "value": "Eurasian Magpie" },
+		{ "id": 7, "label": "Eurasian Jay", "value": "Eurasian Jay" },
+		{ "id": 8, "label": "Eurasian Bullfinch", "value": "Eurasian Bullfinch" },
+		{ "id": 9, "label": "Eurasian Woodcock", "value": "Eurasian Woodcock" },
+		{ "id": 10, "label": "Eurasian Coot", "value": "Eurasian Coot" },
+		{ "id": 11, "label": "Eurasian Whimbrel", "value": "Eurasian Whimbrel" },
+		{ "id": 12, "label": "Eurasian Tree Sparrow", "value": "Eurasian Tree Sparrow" }]
+	';
 }
 
 /*REQUIRE START/STOP FILE*/
