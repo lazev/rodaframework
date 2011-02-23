@@ -6,7 +6,6 @@
 define(JS_RODA, '
 	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/jquery-1.4.2.min.js"></script>
 	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/jquery-ui-1.8.custom.min.js"></script>
-	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/jquery.autocomplete.min.js"></script>
 	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/jquery.bgiframe.min.js"></script>
 	<!--[if IE]>
 	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/excanvas.compiled.js"></script>

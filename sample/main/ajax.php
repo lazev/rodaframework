@@ -70,20 +70,13 @@ if($_REQUEST['com'] == 'remove') {
 
 
 if($_REQUEST['com'] == 'autocity') {
-	echo '
-		[{ "id": 1, "label": "Eurasian Hoopoe", "value": "Eurasian Hoopoe" },
-		{ "id": 2, "label": "Eurasian Wryneck", "value": "Eurasian Wryneck" },
-		{ "id": 3, "label": "Eurasian Pied Flycatcher", "value": "Eurasian Pied Flycatcher" },
-		{ "id": 4, "label": "Eurasian Nuthatch", "value": "Eurasian Nuthatch" },
-		{ "id": 5, "label": "Eurasian Hobby", "value": "Eurasian Hobby" },
-		{ "id": 6, "label": "Eurasian Magpie", "value": "Eurasian Magpie" },
-		{ "id": 7, "label": "Eurasian Jay", "value": "Eurasian Jay" },
-		{ "id": 8, "label": "Eurasian Bullfinch", "value": "Eurasian Bullfinch" },
-		{ "id": 9, "label": "Eurasian Woodcock", "value": "Eurasian Woodcock" },
-		{ "id": 10, "label": "Eurasian Coot", "value": "Eurasian Coot" },
-		{ "id": 11, "label": "Eurasian Whimbrel", "value": "Eurasian Whimbrel" },
-		{ "id": 12, "label": "Eurasian Tree Sparrow", "value": "Eurasian Tree Sparrow" }]
-	';
+
+	echo '[
+		{ "id": 1, "label": "Eurasian Hoopoe<div class=\'descr\'>Hoopoe Eurasian</div>", "value": "Eurasian Hoopoe" },
+		{ "id": 2, "label": "Eurasian Wryneck<div class=\'descr\'>Wryneck Eurasian</div>", "value": "Eurasian Wryneck (2)" },
+		{ "id": 3, "label": "Eurasian Pied Flycatcher<div class=\'descr\'>Pied Flycatcher Eurasian</div>", "value": "Eurasian Pied Flycatcher" },
+		{ "id": 4, "label": "Eurasian Nuthatch<div class=\'descr\'>Nuthatch Eurasian</div>", "value": "Eurasian Nuthatch" }
+	]';
 }
 
 /*REQUIRE START/STOP FILE*/

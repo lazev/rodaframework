@@ -332,23 +332,18 @@ function Fields(x) {
 
 			//Autocomplete properties
 			if(prop.type == 'autocomplete') {
-				$(elem).autocomplete(prop.action, {
-					minChars: 2,
+				$(elem).autocomplete({
+					source: prop.action,
 					delay: 300,
-					width: acWidth,
-					matchContains: 'word',
-					autoFill: false,
-					formatItem: function(row, i, max) { return row[1]; },
-					formatResult: function(row) { return row[1]; }
-				})
-				.result(function(event, data, formatted) {
-					if((data) && (acHidVal[this.id])) $('#'+ acHidVal[this.id]).attr('value', data[0]);
-					if((data) && (acOnSel[this.id])) acOnSel[this.id](data[0]);
-					$(this).trigger('blur');
-				});
-
-				$(elem).change(function() {
-					if($(this).val() == '') $('#'+ acHidVal[this.id]).attr('value', 0);
+					minLength: 2,
+					open: function() {
+						if(acHidVal[$(this).attr('id')]) $('#'+ acHidVal[$(this).attr('id')]).attr('value', 0);
+					},
+					select: function(event, ui) {
+						if(acHidVal[$(this).attr('id')]) $('#'+ acHidVal[$(this).attr('id')]).attr('value', (ui.item) ? ui.item.id : 0);
+						if((ui.item) && (acOnSel[$(this).attr('id')])) setTimeout(acOnSel[$(this).attr('id')] +'('+ ui.item.id +')', 50);
+						$(elem).trigger('blur');
+					}
 				});
 			}
 

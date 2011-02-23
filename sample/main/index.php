@@ -116,7 +116,7 @@ $(document).ready(function() {
 		{ id: 'obs',      type: 'textarea' },
 		{ id: 'address',  type: 'string',  maxsize: 100 },
 		{ id: 'zipcode',  type: 'integer' },
-		{ id: 'city',     type: 'autocomplete', action:'ajax.php?com=autocity', hidden:'codcity', onselect:'alertar()' },
+		{ id: 'city',     type: 'autocomplete', action:'ajax.php?com=autocity', hidden:'codcity' },
 		{ id: 'state',    type: 'string' }
 	]);
 
