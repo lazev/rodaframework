@@ -22,9 +22,9 @@ function insert() {
 	$('#born_date').val('');
 	$('#obs').val('');
 	$('#address').val('');
-	$('#zipcode').val('');
 	$('#city').val('');
 	$('#state').val('');
+	$('#tags').val('');
 	$('#formcontact').dialog('open');
 }
 
@@ -39,9 +39,9 @@ function edit(x) {
 			$('#born_date').val( $(data).find('born_date').text() );
 			$('#obs').val(       $(data).find('obs').text() );
 			$('#address').val(   $(data).find('address').text() );
-			$('#zipcode').val(   $(data).find('zipcode').text() );
 			$('#city').val(      $(data).find('city').text() );
 			$('#state').val(     $(data).find('state').text() );
+			$('#tags').val(      $(data).find('tags').text() );
 
 			$('#detalhes').html( $(data).find('detalhes').text() );
 
@@ -109,15 +109,15 @@ $(document).ready(function() {
 	//Create and define fields options
 	Fields([
 		{ id: 'id',       type: 'hidden' },
-		{ id: 'name',     type: 'string',  maxsize: 100,  require: true },
-		{ id: 'phone',    type: 'string',  maxsize: 100 },
+		{ id: 'name',     type: 'readonly',  maxsize: 100,  require: true },
+		{ id: 'phone',    type: 'integer',  maxsize: 100 },
 		{ id: 'email',    type: 'email',  maxsize: 100 },
 		{ id: 'born_date',type: 'date' },
 		{ id: 'obs',      type: 'textarea' },
 		{ id: 'address',  type: 'string',  maxsize: 100 },
-		{ id: 'zipcode',  type: 'integer' },
 		{ id: 'city',     type: 'autocomplete', action:'ajax.php?com=autocity', hidden:'codcity' },
-		{ id: 'state',    type: 'string' }
+		{ id: 'state',    type: 'string' },
+		{ id: 'tags',     type: 'tags',         action:'ajax.php?com=autocity'  },
 	]);
 
 

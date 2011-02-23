@@ -349,6 +349,31 @@ function Fields(x) {
 
 			//Tags properties
 			else if(prop.type == 'tags') {
+				$(elem)
+				// don't navigate away from the field on tab when selecting an item
+				.bind('keydown', function(event) {
+					if(event.keyCode === $.ui.keyCode.TAB && $(this).data('autocomplete').menu.active) {
+						event.preventDefault();
+					}
+				})
+				.autocomplete({
+					source: prop.action,
+					delay: 300,
+					minLength: 2,
+					//prevent value inserted on focus
+					focus: function() { return false; },
+					select: function(event, ui) {
+						var terms = $(this).attr('value').split(/,\s*/);
+						terms.pop(); //remove the current input
+						terms.push(ui.item.value); //add the selected item
+						terms.push(''); //add placeholder to get the comma-and-space at the end
+						this.value = terms.join(', ');
+						return false;
+					}
+				});
+
+
+				/*
 				$(elem).autocomplete(prop.action, {
 					minChars: 2,
 					delay: 200,
@@ -358,6 +383,7 @@ function Fields(x) {
 					multipleSeparator: ', ',
 					autoFill: false
 				});
+				*/
 			}
 		}
 

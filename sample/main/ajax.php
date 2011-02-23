@@ -53,9 +53,9 @@ if($_REQUEST['com'] == 'save') {
 	$reg['born_date'] = invertdate($_REQUEST['born_date']);
 	$reg['obs']       = $_REQUEST['obs'];
 	$reg['address']   = $_REQUEST['address'];
-	$reg['zipcode']   = $_REQUEST['zipcode'];
 	$reg['city']      = $_REQUEST['city'];
 	$reg['state']     = $_REQUEST['state'];
+	$reg['tags']      = $_REQUEST['tags'];
 
 	if(empty($_REQUEST['id'])) sql("insert into `contacts`", $reg);
 	else sql("update `contacts` set [fields] where id='". $_REQUEST['id'] ."'", $reg);
