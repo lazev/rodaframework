@@ -125,6 +125,28 @@ $(document).ready(function() {
 		'Save': function() { defaultSaveButton($(this), 'save', 'list()'); }, //defaultSaveButton($(this), command, callback);
 		'Close': function() { $(this).dialog('close'); }
 	});
+
+	$(document).keydown(function(event) {
+		if((event.altKey) && (event.ctrlKey)) {
+
+			switch(event.keyCode) {
+				case 70: //F
+
+				if($('#openFilters').is(':visible')) {
+					$('#openFilters').trigger('click');
+					$('#filterBox input').focus();
+				}
+				else { $('.hideFiltersBox').trigger('click'); }
+
+				break;
+				default:
+
+			}
+
+
+
+		}
+	});
 });
 
 //-->

@@ -5,91 +5,13 @@ File used by all the pages
 */
 
 
-function getSubdomain() {
-	return substr($_SERVER['HTTP_HOST'], 0, strpos($_SERVER['HTTP_HOST'], '.'));
-}
-
-
-/**********************************************\FILTERS FUNCTIONS/**********************************************/
-
-function filterword() {
-	$filterword = $_SERVER['REQUEST_URI'] .'a';
-	$filterword = dirname($filterword);
-	return substr($filterword, strrpos($filterword, '/')+1);
-}
-
-function getFilter($name) {
-	return $_SESSION['FILTER'][filterword()][$name];
-}
-
-function setFilter($name, $value) {
-	$_SESSION['FILTER'][filterword()][$name] = $value;
-	return $value;
-}
-
-function defineFilters($changefilter, $clearfilter, $orderby, $nowpage, $registers) {
-	global $filters, $register_per_page;
-
-	if(is_array($filters)) {
-		foreach($filters as $name) {
-			$temp = 'filter_'. $name;
-			global $$temp;
-		}
-	}
-
-	if($changefilter) {
-		foreach($filters as $name) {
-			$temp = $_REQUEST['filter_'. $name];
-			setFilter($name, $temp);
-		}
-		setFilter('activefilter', true);
-		$nowpage = 1;
-	}
-
-	if($clearfilter) {
-		if(is_array($filters)) foreach($filters as $name) setFilter($name, null);
-		setFilter('activefilter', null);
-		$nowpage = 1;
-	}
-
-	if($orderby) {
-		$actual = getFilter('orderby');
-		$tempold = explode(' ', $actual);
-		$tempnew = explode(' ', $orderby);
-
-		//If same old filter then reverse
-		if($tempold[0] == $tempnew[0]) {
-			if($tempold[1] == 'desc') $so = 'asc';
-			else $so = 'desc';
-			$orderby = $tempnew[0] .' '. $so;
-		}
-		setFilter('orderby', $orderby);
-	}
-
-	if($registers) {
-		setFilter('registers', $registers);
-		$nowpage = 1;
-	}
-
-	if($nowpage) setFilter('nowpage', $nowpage);
-}
-
-function iffilter() {
-	$f = filterword();
-	if($_SESSION['FILTER'][$f]['activefilter']) {
-		echo '<script>'. chr(13);
-		foreach($_SESSION['FILTER'][$f] as $chave => $valor) echo 'FILTER["'. $chave .'"] = "'. $valor .'";'. chr(13);
-		echo '</script>';
-	}
-}
-
 /**********************************************\FORMAT, VERIFY and MASK FUNCTIONS/**********************************************/
 
 /*
 ZEROFILL
 Fill the extra space with zeros.
 */
-function zerofill($value, $totalsize=3) {
+function zeroFill($value, $totalsize=3) {
 	while(strlen($value) < $totalsize) $value = '0' . $value;
 	return $value;
 }
@@ -98,11 +20,11 @@ function zerofill($value, $totalsize=3) {
 DOT
 Transform , to .
 */
-function dot($texto) {
-	$resp = str_replace('.', '', $texto);
+function dot($number) {
+	$resp = str_replace('.', '', $number);
 	$resp = trim(str_replace(',', '.', $resp));
 	if(is_numeric($resp)) return $resp;
-	else return $texto;
+	else return $number;
 }
 
 
@@ -111,7 +33,7 @@ COMMA
 Transform . to ,
 */
 function comma($value, $decimals=2, $ifzero=null) {
-	if(($ifzero!==null) && ((float)$value==0)) return $sezero;
+	if(($ifzero!==null) && ((float)$value==0)) return $ifzero;
 	else {
 		$value = (float)$value;
 		if(is_numeric($value)) return number_format($value, $decimals, ',', '');
@@ -123,11 +45,11 @@ function comma($value, $decimals=2, $ifzero=null) {
 COMMAIF
 Transform . to , and show decimals only if the value have it
 */
-function commaif($value, $decimals=2) {
+function commaIf($value, $decimals=2) {
 	if(is_numeric((float)$value)) {
 		$value = (float)$value;
 		if($value == round($value)) return $value;
-		return number_format($value, $decimals, ',', '');
+		else return number_format($value, $decimals, ',', '');
 	} else {
 		return $value;
 	}
@@ -137,16 +59,16 @@ function commaif($value, $decimals=2) {
 ONLYNUMBERS
 Clear all data but numbers
 */
-function onlynumbers($x){
-	for($i=0;$i<strlen($x);$i++) if(is_numeric($x[$i])) $response .= $x[$i];
+function onlyNumbers($string){
+	for($i=0;$i<strlen($string);$i++) if(is_numeric($string[$i])) $response .= $string[$i];
 	return $response;
 }
 
 /*
-STRIPCOMMA
+STRIPDOT
 Transform 123.45 to 12345 format
 */
-function stripcomma($number) {
+function stripDot($number) {
 	return number_format($number, 2, '', '');
 }
 
@@ -154,7 +76,7 @@ function stripcomma($number) {
 INVERTDATE
 Transform dd/mm/YYYY to YYYY-mm-dd
 */
-function invertdate($date='') {
+function invertDate($date='') {
 	if($date == '') return '';
 	else {
 		$split = explode('/',$date);
@@ -169,8 +91,9 @@ function invertdate($date='') {
 /*
 DATEMASK
 Transform YYYY-mm-dd to dd/mm/YYYY
+And YYYY-mm-dd HH:mm:ss to dd/mm/YYYY HH:mm:ss
 */
-function datemask($date='') {
+function dateMask($date='') {
 	if($date == '') return '';
 	else {
 		//If it's datetime format
@@ -187,19 +110,19 @@ function datemask($date='') {
 
 /*
 CEPMASK
-Transform 00000000 to 00000-000 format
+Transform 00000000 to 00000-000 format. (Zipcode brazilian format)
 */
-function cepmask($x) {
-	$x = onlynumbers($x);
-	return substr($x, 0, 5) .'-'. substr($x, 5);
+function cepMask($cep) {
+	$cep = onlyNumbers($cep);
+	return substr($cep, 0, 5) .'-'. substr($cep, 5);
 }
 
 /*
 CPFCNPJMASK
 Format CPF or CNPJ according to size
 */
-function cpfcnpjmask($x) {
-	$x = onlynumbers($x);
+function cpfCnpjMask($x) {
+	$x = onlyNumbers($x);
 	if(strlen($x) == 0) return '';
 	if(strlen($x) > 12) {
 		if(strlen($x) == 14) {
@@ -213,8 +136,8 @@ function cpfcnpjmask($x) {
 
 
 /*PHONEMASK*/
-function phonemask($x) {
-	$x = onlynumbers($x);
+function phoneMask($x) {
+	$x = onlyNumbers($x);
 	if(empty($x)) return '';
 	$r3 = substr($x, -4);
 	$r2 = substr($x, -8, 4);
@@ -228,7 +151,7 @@ function phonemask($x) {
 STRIPACCENT
 Strip accents and replace strange chars
 */
-function stripaccent($string) {
+function stripAccent($string) {
 	return str_replace(
 		array('à','á','â','ã','ä', 'ç', 'è','é','ê','ë', 'ì','í','î','ï', 'ñ', 'ò','ó','ô','õ','ö', 'ù','ú','û','ü', 'ý','ÿ', 'À','Á','Â','Ã','Ä', 'Ç', 'È','É','Ê','Ë', 'Ì','Í','Î','Ï', 'Ñ', 'Ò','Ó','Ô','Õ','Ö', 'Ù','Ú','Û','Ü', 'Ý'),
 		array('a','a','a','a','a', 'c', 'e','e','e','e', 'i','i','i','i', 'n', 'o','o','o','o','o', 'u','u','u','u', 'y','y', 'A','A','A','A','A', 'C', 'E','E','E','E', 'I','I','I','I', 'N', 'O','O','O','O','O', 'U','U','U','U', 'Y'),
@@ -240,8 +163,8 @@ function stripaccent($string) {
 FRIENDNAME
 Convert a name to a friendly domain/shell name
 */
-function friendname($x) {
-	$permitidos = 'abcdefghijklmnopqrstuvwxyz0123456789-._';
+function friendName($x) {
+	$allowed = 'abcdefghijklmnopqrstuvwxyz0123456789-._';
 	$x = trim($x);
 	$x = str_replace(' ', '-', $x);
 	$x = str_replace('--', '-', $x);
@@ -252,9 +175,9 @@ function friendname($x) {
 	$x = str_replace('..', '.', $x);
 	$x = str_replace('&quot;', '', $x);
 	$x = strtolower($x);
-	$x = stripaccent($x);
+	$x = stripAccent($x);
 	$conta = strlen($x);
-	for($ii=0; $ii<$conta; $ii++) if(stripos($permitidos, $x{$ii}) !== false) $resp .= $x{$ii};
+	for($ii=0; $ii<$conta; $ii++) if(stripos($allowed, $x{$ii}) !== false) $resp .= $x{$ii};
 	while(strrpos($resp, '.') == (strlen($resp)-1)) $resp = substr($resp, 0, (strlen($resp)-1));
 	while(strpos($resp, '.') === 0) $resp = substr($resp, 1);
 	while(strpos($resp, 'www.') === 0) $resp = substr($resp, 4);
@@ -264,9 +187,19 @@ function friendname($x) {
 }
 
 
+/*
+GETSUBDOMAIN
+Return the subdomain word in subdomain.domain.com
+*/
+function getSubdomain() {
+	return substr($_SERVER['HTTP_HOST'], 0, strpos($_SERVER['HTTP_HOST'], '.'));
+}
+
+
+
 /*BBCODE
 Transform BBCode to HTML code*/
-function bbcode($x) {
+function bbCode($x) {
 	$x = strip_tags($x);
 	$x = str_replace('[b]', '<b>', $x);
 	$x = str_replace('[/b]', '</b>', $x);
@@ -280,7 +213,7 @@ function bbcode($x) {
 
 /*CLEARBBCODE
 Clear all the bbcodes and html tags*/
-function clearbbcode($x) {
+function clearBBCode($x) {
 	$x = strip_tags($x);
 	$x = str_replace('[b]', '', $x);
 	$x = str_replace('[/b]', '', $x);
@@ -301,7 +234,7 @@ Transform an Array to XML.
 function array2xml($x, $debug=false, $header=true) {
 	if(empty($x)) return false;
 
-	if($debug) $enterchar = chr(13);
+	if($debug) $enterchar = "\n";
 
 	if($header) {
 		header('Content-Type: text/xml; charset=UTF-8');
@@ -346,7 +279,7 @@ function array2xml($x, $debug=false, $header=true) {
 }
 
 //REPENSAR ESSA
-function diexml($coderror, $obs=null) {
+function dieXML($coderror, $obs=null) {
 		global $status_list;
 
 		header('Content-Type: text/xml; charset=UTF-8');
@@ -363,24 +296,25 @@ function diexml($coderror, $obs=null) {
 
 /*UTF8
 Convert array or string to utf8 charset
-onlyutf exclude all non utf8 chars
 */
-function utf8($x, $onlyutf=true) {
+function utf8($x) {
 	if(is_numeric($x)) return $x;
 	elseif(is_array($x)) {
 		foreach($x as $key => $value) {
 			if(is_array($value)) $resp[$key] = utf8($value);
 			else {
-				if(mb_detect_encoding($value .' ', 'UTF-8,ISO-8859-1') != 'UTF-8') $value = utf8_encode($value);
-				if($onlyutf) $value = iconv('UTF-8', 'ISO-8859-1//TRANSLIT//IGNORE', $value);
+				if(mb_detect_encoding($value .' ', 'UTF-8,ISO-8859-1') != 'UTF-8') {
+					$value = iconv('ISO-8859-1', 'UTF-8//TRANSLIT//IGNORE', $value);
+				}
 				$resp[$key] = $value;
 			}
 		}
 		return $resp;
 	}
 	else {
-		if(mb_detect_encoding($x .' ', 'UTF-8,ISO-8859-1') != 'UTF-8') $x = utf8_encode($x);
-		if($onlyutf) $x = iconv('UTF-8', 'ISO-8859-1//TRANSLIT//IGNORE', $x);
+		if(mb_detect_encoding($x .' ', 'UTF-8,ISO-8859-1') != 'UTF-8') {
+			$x = iconv('ISO-8859-1', 'UTF-8//TRANSLIT//IGNORE', $x);
+		}
 		return $x;
 	}
 }
@@ -411,15 +345,15 @@ function iso88591($x) {
 /*SUPERTRIM
 Trim strings and arrays
 */
-function supertrim($x) {
+function superTrim($x, $char=null) {
 	if(is_array($x)) {
 		foreach($x as $key => $value) {
-			if(is_array($value)) $resp[$key] = supertrim($value);
-			else $resp[$key] = supertrim($value);
+			if(is_array($value)) $resp[$key] = superTrim($value);
+			else $resp[$key] = superTrim($value);
 		}
 		return $resp;
 	}
-	else return trim($x);
+	else return trim($x, $char);
 }
 
 
@@ -428,7 +362,7 @@ function supertrim($x) {
 IS_EMAIL
 Basic check of an email structure
 */
-function is_mail($email) {
+function isMail($email) {
 	return eregi('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$', $email);
 }
 
@@ -437,8 +371,8 @@ function is_mail($email) {
 IS_CPF
 Return true if the value is Brazilian CPF
 */
-function is_cpf($x) {
-	if(strlen(onlynumbers($x)) > 12) return false;
+function isCpf($x) {
+	if(strlen(onlyNumbers($x)) > 12) return false;
 	return true;
 }
 
@@ -447,7 +381,7 @@ function is_cpf($x) {
 IS_DATE
 Check if the value is a date (yyyy-mm-dd)
 */
-function is_date($date) {
+function isDate($date) {
 
 	if(strlen($date) > 12) { //Datetime
 		if(preg_match('/^(\d{4})-(\d{2})-(\d{2}) ([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/', $date, $matches)) {
@@ -467,10 +401,10 @@ function is_date($date) {
 
 
 /*
-SIZE_HUM_READ
+FILESIZEMASK
 Return human readable size format
 */
-function size_hum_read($size) {
+function fileSizeMask($size) {
 	$i=0;
 	$iec = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
 	while(($size/1024) > 1) {
@@ -502,8 +436,8 @@ function clientFolder($subfolder='') {
 CLIENTKEY
 Subfunction, return the name of the client's folder.
 */
-function clientKey($x) {
-	return $x . substr(md5($x . 'lazevroda'), 0, 3);
+function clientKey($x, $passkey='lazevroda') {
+	return $x . substr(md5($x . $passkey), 0, 3);
 }
 
 
@@ -567,7 +501,7 @@ sql("insert into table", $ins);
 TO SELECT:
 $response = sql("select * from table where ...");
 */
-function sql($com, $insert='', $alternative_connection='', $debug=false) {
+function sql($com, $data_fields='', $alternative_connection='', $debug=false) {
 
 	$com = trim($com);
 
@@ -576,10 +510,10 @@ function sql($com, $insert='', $alternative_connection='', $debug=false) {
 	//Else, use the global connection
 	else global $connection;
 
-	//If $insert is empty, just run the $com command
-	if(!empty($insert)) {
-		if(is_array($insert)) {
-			foreach($insert as $key => $value) {
+	//If $data_fields is empty, just run the $com command
+	if(!empty($data_fields)) {
+		if(is_array($data_fields)) {
+			foreach($data_fields as $key => $value) {
 				if(!empty($key)) {
 					$fields[] = $key;
 					if(!get_magic_quotes_gpc()) $values[] = addslashes($value);
@@ -672,7 +606,7 @@ function showTagList($table, $field, $where='') {
 		}
 		if(is_array($combo)) {
 			ksort($combo);
-			foreach($combo as $key => $value) echo $key . chr(13);
+			foreach($combo as $key => $value) echo $key . "\n";
 		}
 	}
 }
@@ -697,7 +631,7 @@ function mysqlUpdateChanges($sql, $fields, $exclude=null) {
 
 		if($go) {
 			if($value != $select[$key]) {
-				if(is_date($value)) $value = datemask($value);
+				if(isDate($value)) $value = dateMask($value);
 				if(is_float($value)) $value = comma($value);
 				$resp[] = $key .': '. $value;
 			}
@@ -745,7 +679,7 @@ SENDMAIL
 Send an email using smtp
 Optimized to GMail
 */
-function sendMail($to, $subject, $msg, $fromName='', $fromMail='', $html=false) {
+function sendMail($to, $subject, $msg, $fromName='', $fromMail='', $html=false, $attach=null) {
 	global $MAIL;
 
 	require_once('smtp/class.phpmailer.php');
@@ -770,12 +704,12 @@ function sendMail($to, $subject, $msg, $fromName='', $fromMail='', $html=false) 
 	$mail->AddAddress($to);
 	$mail->AddReplyTo($fromMail, $fromName);
 
-	/*
-	Extras:
-	$mail->AddAttachment("/var/tmp/file.tar.gz");         // File attached
-	$mail->AddAttachment("/tmp/image.jpg", "new.jpg");    // File attached with other name
-	$mail->AltBody = "Text to show to users with HTML view desactived";
-	*/
+	if($anexo) {
+		if(is_array($anexo)) $lista = $anexo;
+		else $lista[] = $anexo;
+
+		foreach($lista as $arq) $mail->AddAttachment($arq);
+	}
 
 	return $mail->Send(); //Returns true or false
 }
@@ -788,7 +722,7 @@ Send warnings and errors to an email
 */
 function errorMonitor($msg) {
 	global $ALERT_EVENT_EMAIL;
-	$text = date('d/m/Y H:i') .chr(13). $_SERVER['PHP_SELF'] .chr(13). $msg . chr(13);
+	$text = date('d/m/Y H:i') ."\n". $_SERVER['PHP_SELF'] ."\n". $msg . "\n";
 	foreach($ALERT_EVENT_EMAIL as $mail) {
 		sendMail($mail, 'Error on '. SYSTEM_NAME, $texto);
 	}
@@ -823,11 +757,18 @@ function createPass($size=6, $initpass='') {
 
 /*
 CHANGEDATE
-Increase/decrease year, month and/or day of some date
+Increase/decrease year, month and/or day (and hour, minute and second) of some date
 */
-function changeDate($date, $year=0, $month=0, $day=0) {
-	$split = explode('-', $date);
-	return date('Y-m-d', mktime (0, 0, 0, $split[1]+$month, $split[2]+$day, $split[0]+$year));
+function changeDate($date, $year=0, $month=0, $day=0, $hour=0, $min=0, $sec=0) {
+	if(strlen($date) > 12) { //Date time (Y-m-d H:i:s)
+		$temp = explode(' ', $date);
+		$dat = explode('-', $temp[0]);
+		$tim = explode(':', $temp[1]);
+		return date('Y-m-d H:i:s', mktime($tim[0]+$hour, $tim[1]+$min, $tim[2]+$sec, $dat[1]+$month, $dat[2]+$day, $dat[0]+$year));
+	} else {
+		$split = explode('-', $date);
+		return date('Y-m-d', mktime(0, 0, 0, $split[1]+$month, $split[2]+$day, $split[0]+$year));
+	}
 }
 
 /*
@@ -941,29 +882,29 @@ function algorithm($text, $privatekey) {
 
 
 /*GENERATEKEY
-Create a key with the table name, any id and MD5 check security
+Create a key with any cod, any id and MD5 check security
 Returns string with the key
 Example: 00.1134.48ae.1b8f.c24
 */
-function generateKey($table, $id, $passkey) {
+function generateKey($cod, $id, $passkey) {
 	$id = (int)$id;
 
-	$md5 = substr(md5($table . $id . $passkey), 5, 10);
+	$md5 = substr(md5($cod . $id . $passkey), 5, 10);
 	$md5 = substr($md5, 0, 3) .'.'. substr($md5, 3, -3) .'.'. substr($md5, -3);
 
-	$table = zerofill($table, 3);
-	$table = substr($table, 0, -1) .'.'. substr($table, -1);
+	$cod = zerofill($cod, 3);
+	$cod = substr($cod, 0, -1) .'.'. substr($cod, -1);
 
 	$id = zerofill($id, 3);
 	$id = substr($id, 0, -1) .'.'. substr($id, -1);
 
-	return $table . $id . $md5;
+	return $cod . $id . $md5;
 }
 
 /*EXTRACTKEY
-Extract table and ID from the above function
+Extract cod and ID from the above function
 Returns:
-  $array['table']
+  $array['cod']
   $array['id']
 or false if wrong key
 */
@@ -971,18 +912,92 @@ function extractKey($key, $passkey) {
 	if(empty($key)) return false;
 	else {
 		$cut = strpos($key, '.')+2;
-		$resp['table'] = str_replace('.', '', substr($key, 0, $cut))*1;
+		$resp['cod'] = str_replace('.', '', substr($key, 0, $cut))*1;
 		$key = substr($key, $cut);
 
 		$cut = strpos($key, '.')+2;
 		$resp['id'] = str_replace('.', '', substr($key, 0, $cut))*1;
 		$key = str_replace('.', '', substr($key, $cut));
 
-		$md5 = substr(md5($resp['table'] . $resp['id'] . $passkey), 5, 10);
+		$md5 = substr(md5($resp['cod'] . $resp['id'] . $passkey), 5, 10);
 
 		if($md5 != $key) return false;
 		else return $resp;
 	}
 }
 
+
+
+/**********************************************\FILTERS FUNCTIONS/**********************************************/
+
+function filterWord() {
+	$filterword = $_SERVER['REQUEST_URI'] .'a';
+	$filterword = dirname($filterword);
+	return substr($filterword, strrpos($filterword, '/')+1);
+}
+
+function getFilter($name) {
+	return $_SESSION['FILTER'][filterword()][$name];
+}
+
+function setFilter($name, $value) {
+	$_SESSION['FILTER'][filterword()][$name] = $value;
+	return $value;
+}
+
+function defineFilters($changefilter, $clearfilter, $orderby, $nowpage, $registers) {
+	global $filters, $register_per_page;
+
+	if(is_array($filters)) {
+		foreach($filters as $name) {
+			$temp = 'filter_'. $name;
+			global $$temp;
+		}
+	}
+
+	if($changefilter) {
+		foreach($filters as $name) {
+			$temp = $_REQUEST['filter_'. $name];
+			setFilter($name, $temp);
+		}
+		setFilter('activefilter', true);
+		$nowpage = 1;
+	}
+
+	if($clearfilter) {
+		if(is_array($filters)) foreach($filters as $name) setFilter($name, null);
+		setFilter('activefilter', null);
+		$nowpage = 1;
+	}
+
+	if($orderby) {
+		$actual = getFilter('orderby');
+		$tempold = explode(' ', $actual);
+		$tempnew = explode(' ', $orderby);
+
+		//If same old filter then reverse
+		if($tempold[0] == $tempnew[0]) {
+			if($tempold[1] == 'desc') $so = 'asc';
+			else $so = 'desc';
+			$orderby = $tempnew[0] .' '. $so;
+		}
+		setFilter('orderby', $orderby);
+	}
+
+	if($registers) {
+		setFilter('registers', $registers);
+		$nowpage = 1;
+	}
+
+	if($nowpage) setFilter('nowpage', $nowpage);
+}
+
+function ifFilter() {
+	$f = filterWord();
+	if($_SESSION['FILTER'][$f]['activefilter']) {
+		echo '<script>'. "\n";
+		foreach($_SESSION['FILTER'][$f] as $chave => $valor) echo 'FILTER["'. $chave .'"] = "'. $valor .'";'. "\n";
+		echo '</script>';
+	}
+}
 ?>

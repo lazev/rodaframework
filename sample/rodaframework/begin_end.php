@@ -22,7 +22,7 @@ if(!$already_call_begin) {
 		}
 	} else {
 		if(!$disable_connection) {
-			if(file_exists(ACCESS_FILE)) require ACCESS_FILE;
+			if(file_exists(ROOT . ACCESS_FILE)) require ROOT . ACCESS_FILE;
 		}
 	}
 
@@ -33,7 +33,7 @@ if(!$already_call_begin) {
 
 	defineFilters($_REQUEST['changefilter'], $_REQUEST['clearfilter'], $_REQUEST['orderby'], $_REQUEST['nowpage'], $_REQUEST['registers']);
 	if(!empty($style_name)) {
-		iffilter(); //If filter is set, put on javascript
+		ifFilter(); //If filter is set, put on javascript
 	}
 
 	if(!empty($_REQUEST['startTutorial'])) $_SESSION['tutorialActive'] = $_REQUEST['startTutorial'];

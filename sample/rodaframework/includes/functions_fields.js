@@ -34,9 +34,8 @@ function Filters(listid, source, jscommand, fields) {
 
 	var linx = document.createElement('a');
 	$(linx).attr('href', '');
-	$(linx).addClass('clearFilters');
+	$(linx).addClass('hideFiltersBox');
 	$(linx).html('Ocultar caixa');
-//	$(linx).click(closeFilterBox);
 	$(form).append($(linx));
 
 
@@ -73,7 +72,13 @@ function Filters(listid, source, jscommand, fields) {
 		$('#filterBox')[0].reset();
 		$('#'+ listid).animate({ marginRight: '0px' }, 300 );
 		$('#openFilters').show('slide', {direction: 'right'}, 'fast');
+	});
 
+	$('.hideFiltersBox').click(function(event) {
+		event.preventDefault();
+		$('#filterBox').hide('slide', {direction: 'right'}, 'fast');
+		$('#'+ listid).animate({ marginRight: '0px' }, 300 );
+		$('#openFilters').show('slide', {direction: 'right'}, 'fast');
 	});
 
 	if((!empty(FILTER)) && (FILTER['activefilter'])) {

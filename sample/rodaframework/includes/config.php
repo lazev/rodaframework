@@ -4,8 +4,9 @@
  * */
 
 define(JS_RODA, '
-	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/jquery-1.4.2.min.js"></script>
-	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/jquery-ui-1.8.custom.min.js"></script>
+	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/jquery-1.5.1.min.js"></script>
+	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/jquery-ui-1.8.10.custom.min.js"></script>
+	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/jquery.corner.js"></script>
 	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/jquery.bgiframe.min.js"></script>
 	<!--[if IE]>
 	<script type="text/javascript" src="'. RODA_INCLUDES .'jquery/excanvas.compiled.js"></script>
@@ -21,7 +22,7 @@ define(JS_RODA, '
 //$jquery_css_ui_theme - from config.inc.php file
 define(CSS_RODA, '
 	<link rel="stylesheet" type="text/css" href="'. RODA_STYLES .'general.css"/>
-	<link rel="stylesheet" type="text/css" href="'. RODA_STYLES .'jquery/'. $jquery_css_ui_theme .'/jquery-ui-1.8.custom.css"/>
+	<link rel="stylesheet" type="text/css" href="'. RODA_STYLES .'jquery/'. $jquery_css_ui_theme .'/jquery-ui-1.8.10.custom.css"/>
 	<link rel="stylesheet" type="text/css" href="'. RODA_STYLES .'jquery/jquery.jqplot.min.css"/>
 ');
 ?>

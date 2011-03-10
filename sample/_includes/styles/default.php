@@ -15,8 +15,12 @@ if(!$already_show_header) { $already_show_header = true; //Do not change
 
 	<?=JS_RODA?>
 	<script type="text/javascript" src="<?=ROOT_URL?>_includes/functions.js"></script>
+	<?if(!empty($_SESSION['user_logged'])) {?>
+		<script type="text/javascript" src="<?=ROOT_URL?>_includes/styles/lazevTab.js"></script>
+	<?}?>
 </head>
 <body>
+<div id="lazevTabMenu"></div>
 <div id="header" class="hideOnPrint">
 
 	<div id="auxmenu">
@@ -35,7 +39,8 @@ if(!$already_show_header) { $already_show_header = true; //Do not change
 
 	<?if(!empty($_SESSION['user_logged'])) {?>
 	<div id="headermenu">
-		<span><a href='../main'>Home</a></span>
+		<span><a href='' id='lazevTabCadastros'>Main</a></span>
+		<span><a href='' id='lazevTabVendas'>Other</a></span>
 	</div>
 	<?}?>
 </div>

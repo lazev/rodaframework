@@ -253,6 +253,17 @@ body {
 	clear: both;
 }
 
+#headermenu span.withLazevMenu:hover {
+	background: url('img/tabbarmenu.png') top left no-repeat;
+	z-index: 5;
+}
+
+#headermenu span.withLazevMenuHover {
+	background: url('img/tabbarmenu.png') top left no-repeat;
+	z-index: 5;
+}
+
+
 #headermenu span:hover {
 	background: url('img/tabbarover.png') top left no-repeat;
 }
@@ -262,7 +273,6 @@ body {
 }
 
 #headermenu span {
-
 	background: url('img/tabbaroff.png') top left no-repeat;
 	width: 135px;
 	margin: 5px 0 0 0;
@@ -277,6 +287,41 @@ body {
 	padding: 6px;
 	display: block;
 	color: #005E04 !important;
+}
+
+
+#lazevTabMenu {
+	background: #f5f5f5;
+	position: absolute;
+	z-index: 1;
+	margin: 31px 0 0 0;
+	display: none;
+	min-width: 150px;
+	-moz-border-radius: 0 10px 10px 10px;
+	-webkit-border-radius: 0 10px 10px 10px;
+	border: 1px solid gray;
+}
+
+#lazevTabMenu .hideLazevBorder {
+	position: relative;
+	width: 120px;
+	height: 1px;
+	background: #f5f5f5;
+	top: -1px;
+	left: 0;
+}
+
+#lazevTabMenu a {
+	display: block;
+	padding: 5px;
+	text-decoration: none;
+	color: gray;
+}
+
+#lazevTabMenu a:hover {
+	background: white;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
 }
 
 
