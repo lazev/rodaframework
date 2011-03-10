@@ -51,10 +51,10 @@ $(document).ready(function() {
 	}, 1000);
 
 
-	/*keep the connection alive - FIX THIS*/
+	/*keep the connection alive*/
 	setInterval(function() {
-		$.get('wakeup.php');
-	}, 1000 * 60 * 10);
+		$.get('../rodaframework/includes/wakeup.php');
+	}, 1000 * 60 * 10); //10 minutes
 
 
 	/*on submit, stop the submit and click the default button*/
@@ -70,28 +70,28 @@ $(document).ready(function() {
 
 /*************************\FORMAT FUNCTIONS/*************************/
 
-jQuery.fn.limitchars = function(y) {
+jQuery.fn.limitChars = function(y) {
 	this.blur(function(e) {
-		cleanchars(this, y);
+		cleanChars(this, y);
 	});
 }
 
-function cleanchars(z, y) {
+function cleanChars(z, y) {
     x = z.value;
     y = y.toUpperCase();
     y = y.replace('A-Z', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
     y = y.replace('0-9', '1234567890');
-    var chars_permitidos = y;
+    var chars_allowed = y;
     var resposta = '';
     for(ii=0; ii<x.length; ii++) {
-        if ((chars_permitidos.indexOf(x.charAt(ii).toUpperCase()) > -1) || (chars_permitidos.indexOf(x.charAt(ii).toLowerCase()) > -1)) {
+        if ((chars_allowed.indexOf(x.charAt(ii).toUpperCase()) > -1) || (chars_allowed.indexOf(x.charAt(ii).toLowerCase()) > -1)) {
             resposta += x.charAt(ii);
         }
     }
     z.value = resposta;
 }
 
-function dotcomma(x) {
+function dotComma(x) {
 	var conta = 0;
 	while(x.value.indexOf(".") != -1) {	x.value = x.value.replace(".", ","); conta++; }
 	for(ii=0; ii<conta; ii++) {
@@ -99,7 +99,7 @@ function dotcomma(x) {
 	}
 }
 
-function completedate(z) {
+function completeDate(z) {
 	x = z.value;
 	if ((x.length == 1) || (x.length == 2)) {
 		hoje = new Date();
@@ -119,7 +119,7 @@ function completedate(z) {
 	}
 }
 
-function hifenbar(x) {
+function hifenBar(x) {
 	while(x.value.indexOf("-") != -1) { x.value = x.value.replace("-", "/"); }
 }
 
@@ -150,7 +150,7 @@ function comma(num) {
 }
 
 function trim(str){
-	return str.replace(/^\s+|\s+$/g,"");
+	return str.replace(/^\s+|\s+$/g, '');
 }
 
 
@@ -199,19 +199,19 @@ function empty(mixed_var) {
 }
 
 
-function checkcpfcnpj(x) {
-	if (x.length < 13) return checkcpf(x);
-	else return checkcnpj(x);
+function checkCpfCnpj(x) {
+	if (x.length < 13) return checkCpf(x);
+	else return checkCnpj(x);
 }
 
-function checkcpf(x) {
+function checkCpf(x) {
 	var CPF = x;
 	if(CPF=='') var faiado = true;
 	else {
-		if(CPF == "00000000000" || CPF == "11111111111" ||
-			CPF == "22222222222" ||	CPF == "33333333333" || CPF == "44444444444" ||
-			CPF == "55555555555" || CPF == "66666666666" || CPF == "77777777777" ||
-			CPF == "88888888888" || CPF == "99999999999" || CPF == "00000000000") {
+		if(CPF == '00000000000' || CPF == '11111111111' ||
+			CPF == '22222222222' ||	CPF == '33333333333' || CPF == '44444444444' ||
+			CPF == '55555555555' || CPF == '66666666666' || CPF == '77777777777' ||
+			CPF == '88888888888' || CPF == '99999999999' || CPF == '00000000000') {
 			var faiado = true;
 		}
 		soma = 0;
@@ -229,10 +229,10 @@ function checkcpf(x) {
 	else return true;
 }
 
-function checkcnpj(x) {
+function checkCnpj(x) {
 	var s = x;
 	var i;
-	if(s.length == "15") s = s.substr(1,14);
+	if(s.length == '15') s = s.substr(1,14);
 	if(s != '00000000000000') {
 		var c = s.substr(0,12);
 		var dv = s.substr(12,2);
@@ -253,8 +253,8 @@ function checkcnpj(x) {
 }
 
 
-/*IS_MAIL*/
-function is_mail(x) {
+/*ISMAIL*/
+function isMail(x) {
 	if ((x.indexOf('@') < 1) ||
 		(x.indexOf('.') < 1) ||
 		(x.indexOf('@.') > -1) ||
@@ -267,8 +267,8 @@ function is_mail(x) {
 	}
 }
 
-/*IS_DATE*/
-function is_date(x) {
+/*ISDATE*/
+function isDate(x) {
 	if(x != '') {
 		if(x.indexOf('/') == -1) return false;
 		else if (x.indexOf('/') == x.lastIndexOf('/')) return false;
@@ -288,7 +288,7 @@ function is_date(x) {
 
 /***********************\CHECKBOX FUNCTIONS/***********************/
 
-function countsel(form) {
+function countSel(form) {
 	var selected = 0;
 	var x = $('#'+ form);
 	for (var ii=0; ii<x.elements.length; ii++) {
@@ -300,7 +300,7 @@ function countsel(form) {
 	return selected;
 }
 
-function firstsel(list) {
+function firstSel(list) {
 	var selectbeforeclick = 'Selecione um registro antes de clicar no botão';
 
 	var resp = $('#'+ list).find('tbody tr.selected:first').children('td:first').children('input:checkbox').attr('value');
@@ -316,7 +316,7 @@ function firstsel(list) {
 	return resp;
 }
 
-function allsell(list) {
+function allSell(list) {
 	var selectbeforeclick = 'Selecione um ou mais registros antes de clicar no botão';
 
 	resp = new Array();
@@ -350,7 +350,7 @@ function popup(url, w, h) {
 	if(!telapopup) alert('Atenção, o seu navegador está bloqueando as janelas popups, é necessário que você habilite a visualização de Popups.');
 }
 
-function popupform(formulario, w, h) {
+function popupForm(formulario, w, h) {
 	if(!window.focus) return true;
 
 	if(isNaN(w)) var w=750;
@@ -495,6 +495,7 @@ function defaultSaveButton(form, com, callback) {
 	}
 }
 
+
 /*************************\TUTORIAL FUNCTIONS/*************************/
 function initTutorial(x) {
 	$.getScript('../_includes/tutorials/'+ x);
@@ -520,10 +521,10 @@ jQuery.fn.tagName = function() {
     return this.get(0).tagName;
 }
 
+
+
+
 /*************************\INTERNACIONALIZATION/*************************/
-
-
-
 function _(x) {
 //	return getLang(x);
 }

@@ -377,18 +377,6 @@ function Fields(x) {
 					}
 				});
 
-
-				/*
-				$(elem).autocomplete(prop.action, {
-					minChars: 2,
-					delay: 200,
-					width: acWidth,
-					matchContains: 'word',
-					multiple: true,
-					multipleSeparator: ', ',
-					autoFill: false
-				});
-				*/
 			}
 		}
 
@@ -431,24 +419,24 @@ jQuery.fn.setEspecialAttributes = function(x) {
 		if(x == 'integer') var limits = '0-9'; //Only positive numbers
 		else var limits = '0-9-'; //Positive and negative numbers
 
-		this.limitchars(limits);
+		this.limitChars(limits);
 	}
 	else if((x == 'money') || (x == 'money-')) {
 		if(x == 'money') var limits = '0-9,'; //Only positive numbers
 		else var limits = '0-9-,'; //Positive and negative numbers
 
 		this.keyup(function() {
-			dotcomma(this);
+			dotComma(this);
 		});
-		this.limitchars(limits);
+		this.limitChars(limits);
 	}
 	else if(x == 'date') {
 		this.attr('maxlength', '10');
 		this.blur(function() {
-			hifenbar(this);
-			cleanchars(this, '0-9/');
-			completedate(this);
-			if(!is_date(this.value)) $(this).fieldErrorAlert(true);
+			hifenBar(this);
+			cleanChars(this, '0-9/');
+			completeDate(this);
+			if(!isDate(this.value)) $(this).fieldErrorAlert(true);
 		});
 
 
@@ -462,13 +450,13 @@ jQuery.fn.setEspecialAttributes = function(x) {
 		});
 	}
 	else if(x == 'login') {
-		this.limitchars('A-Z0-9');
+		this.limitChars('A-Z0-9');
 	}
 	else if((x == 'cpf') || (x == 'cnpj') || (x == 'cpfcnpj') || (x == 'cnpjcpf')) {
-		this.limitchars('0-9');
+		this.limitChars('0-9');
 		this.blur(function() {
 			if(x == 'cpf') {
-				if(!checkcpf(this.value)) {
+				if(!checkCpf(this.value)) {
 					if(window.onError) onError($(this).attr('id'));
 					$(this).fieldErrorAlert(true);
 				}
@@ -476,7 +464,7 @@ jQuery.fn.setEspecialAttributes = function(x) {
 					if(window.onOk) onOk($(this).attr('id'));
 				}
 			} else if(x == 'cnpj') {
-				if(!checkcnpj(this.value)) {
+				if(!checkCnpj(this.value)) {
 					if(window.onError) onError($(this).attr('id'));
 					$(this).fieldErrorAlert(true);
 				}
@@ -484,7 +472,7 @@ jQuery.fn.setEspecialAttributes = function(x) {
 					if(window.onOk) onOk($(this).attr('id'));
 				}
 			} else {
-				if(!checkcpfcnpj(this.value)) {
+				if(!checkCpfCnpj(this.value)) {
 					if(window.onError) onError($(this).attr('id'));
 					$(this).fieldErrorAlert(true);
 				}
@@ -495,9 +483,9 @@ jQuery.fn.setEspecialAttributes = function(x) {
 		});
 	}
 	else if(x == 'email') {
-		this.limitchars('0-9A-Z_.@-');
+		this.limitChars('0-9A-Z_.@-');
 		this.blur(function() {
-			if(!is_mail(this.value)) {
+			if(!isMail(this.value)) {
 				if(window.onError) onError($(this).attr('id'));
 				$(this).fieldErrorAlert(true);
 			} else {
@@ -667,9 +655,7 @@ function gridList(destiny) {
 
 		resp[r++] = '</td></tr></tfoot></table>';
 		$('#'+ this.destiny).html(resp.join(''));
-//		$('#'+ this.destiny).addClass('tableList');
 
-//		formatTableList($('#'+ this.destiny));
 		formatTableList($('.tableList'));
 
 		var listobj = $('#'+ this.destiny +' table');

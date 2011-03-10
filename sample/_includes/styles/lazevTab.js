@@ -1,41 +1,29 @@
-/*var lazevTabMenuOpen;
-jQuery.fn.lazevTab = function(tabarray) {
-	var ii = 0;
-	menu = new Array();
-	menu[ii++] = '<div class="lazevTabMenu" id="'+ this.attr('id') +'Menu">';
-	for(k in tabarray) {
-		menu[ii++] = '<a href="'+ tabarray[k]['link'] +'">'+ tabarray[k]['label'] +'</a>';
-	}
-	menu[ii++] = '</div>';
-
-	elem = menu.join('');
-
-	$(elem).mouseover(function() {
-		lazevTabMenuOpen = $(this).attr('id');
-		$('#'+ $(this).attr('id')).fadeIn();
-	});
-	$(elem).mouseout(function() {
-		lazevTabMenuOpen = $(this).attr('id');
-		setTimeout(function() { if(!lazevTabMenuOpen) $('#'+ $(this).attr('id')).fadeOut(); }, 500);
-	});
-	this.mouseover(function() {
-		lazevTabMenuOpen = $(this).attr('id') +'Menu';
-		$('#'+ $(this).attr('id') +'Menu').fadeIn();
-	});
-	this.mouseout(function() {
-		lazevTabMenuOpen = $(this).attr('id') +'Menu';
-		setTimeout(function() { if(!lazevTabMenuOpen) $('#'+ $(this).attr('id') +'Menu').fadeOut(); }, 500);
-	});
+$(document).ready(function() {
 
 
-	nowleft = this.offset();
-	nowleft.left = this.offset().left;
-	$(elem).offset(nowleft);
+	//PARTE DO MENU
 
-	$('body').append(elem);
-}
-*/
+	$('#lazevTabCadastros').lazevTab([
+		{ label:'Clientes',     link:'../clientes' },
+		{ label:'Fornecedores', link:'../fornecedores' },
+		{ label:'Usuários',     link:'../usuarios' }
+	]);
 
+
+	$('#lazevTabVendas').lazevTab([
+		{ label:'Vender produto', link:'../vender' },
+		{ label:'Listar vendas',  link:'../vendas' }
+	]);
+
+	/*FIM DA PARTE DO MENU*/
+
+
+
+
+});
+
+
+/*SCRIPT DE CRIAÇÃO DOS MENUS*/
 var lazevTabMenuOpen;
 lazevTabMenuArray = new Array();
 jQuery.fn.lazevTab = function(tabarray) {
@@ -86,19 +74,3 @@ jQuery.fn.lazevTab = function(tabarray) {
 		}, 300);
 	});
 }
-
-
-$(document).ready(function() {
-
-	$('#lazevTabCadastros').lazevTab([
-		{ label:'Clientes',     link:'../clientes' },
-		{ label:'Fornecedores', link:'../fornecedores' },
-		{ label:'Usuários',     link:'../usuarios' }
-	]);
-
-	$('#lazevTabVendas').lazevTab([
-		{ label:'Vender produto', link:'../vender' },
-		{ label:'Listar vendas',  link:'../vendas' }
-	]);
-
-});

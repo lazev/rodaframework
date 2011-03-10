@@ -75,7 +75,7 @@ function list() {
 }
 
 function remove() {
-	x = allsell('listbox');
+	x = allSell('listbox');
 	if((!empty(x)) && (confirm('Are you sure?'))) {
 		$.post('ajax.php', 'com=remove&cods='+ x , function(data) {
 			if(data == 1) {
@@ -87,9 +87,6 @@ function remove() {
 	}
 }
 
-function alertar(x) {
-	alert(x);
-}
 
 $(document).ready(function() {
 
@@ -109,12 +106,12 @@ $(document).ready(function() {
 	//Create and define fields options
 	Fields([
 		{ id: 'id',       type: 'hidden' },
-		{ id: 'name',     type: 'readonly',  maxsize: 100,  require: true },
-		{ id: 'phone',    type: 'integer',  maxsize: 100 },
-		{ id: 'email',    type: 'email',  maxsize: 100 },
+		{ id: 'name',     type: 'string',    maxsize: 100,  require: true },
+		{ id: 'phone',    type: 'integer',   maxsize: 100 },
+		{ id: 'email',    type: 'email',     maxsize: 100 },
 		{ id: 'born_date',type: 'date' },
 		{ id: 'obs',      type: 'textarea' },
-		{ id: 'address',  type: 'string',  maxsize: 100 },
+		{ id: 'address',  type: 'string',    maxsize: 100 },
 		{ id: 'city',     type: 'autocomplete', action:'ajax.php?com=autocity', hidden:'codcity' },
 		{ id: 'state',    type: 'string' },
 		{ id: 'tags',     type: 'tags',         action:'ajax.php?com=autocity'  },
@@ -139,8 +136,15 @@ $(document).ready(function() {
 				else { $('.hideFiltersBox').trigger('click'); }
 
 				break;
-				default:
 
+				case 77: //M
+
+					$('.withLazevMenu:first').trigger('mouseover');
+
+				break;
+
+				default:
+				alert(event.keyCode);
 			}
 
 
